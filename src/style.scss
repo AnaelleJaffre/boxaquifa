@@ -1,81 +1,152 @@
-body {
-  margin: 0;
-  overflow: hidden;
-  background: #0f0f12;
-  font-family: 'Courier New', Courier, monospace;
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Gaegu&display=swap');
+
+// ─── Tokens de design ────────────────────────────────────────────────────────
+:root {
+  // Couleurs
+  --couleur-fond:             #0f0f12;
+  --couleur-texte:            #ffffff;
+  --couleur-surlignage:       rgba(179, 221, 216, 0.32);
+
+  --couleur-hud:              rgba(255, 255, 255, 0.08);
+  --couleur-hud-bordure:      rgba(255, 255, 255, 0.12);
+
+  --couleur-inventaire:       rgba(79, 79, 79, 0.55);
+  --couleur-slot:             rgba(255, 255, 255, 0.08);
+  --couleur-slot-survol:      rgba(255, 255, 255, 0.15);
+
+  // Typographie
+  --police-principale:        'Gaegu', sans-serif;
+  --police-mono:              'Share Tech Mono', monospace;
+  --taille-texte-base:        16px;
+  --taille-texte-hud:         14px;
+  --taille-texte-hud-mobile:  12px;
+
+  // Espacement
+  --rayon-normal:             10px;
+  --rayon-slot:               8px;
+  --hud-padding:              8px 12px;
+  --hud-gap:                  12px;
+  --inventaire-gap:           8px;
+  --inventaire-padding:       14px;
+
+  // Breakpoints (usage JS possible via getComputedStyle)
+  --bp-mobile:                600px;
 }
 
-/* canvas Phaser */
+// ─── Base ─────────────────────────────────────────────────────────────────────
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--couleur-fond);
+  font-family: var(--police-principale);
+  font-size: var(--taille-texte-base);
+  color: var(--couleur-texte);
+  width: 100%;
+  height: 100%;
+}
+
+#game {
+  width: 100vw;
+  height: 100vh;
+}
+
 canvas {
   display: block;
 }
 
-/* HUD */
+::selection {
+  background-color: var(--couleur-surlignage);
+}
+
+// ─── HUD ──────────────────────────────────────────────────────────────────────
 #hud {
   position: absolute;
   top: 10px;
   left: 10px;
-  color: white;
   display: flex;
-  gap: 20px;
-  font-size: 14px;
+  align-items: center;
+  gap: var(--hud-gap);
+  padding: var(--hud-padding);
+  background: var(--couleur-hud);
+  border: 1px solid var(--couleur-hud-bordure);
+  border-radius: var(--rayon-normal);
+  font-size: var(--taille-texte-hud);
+  font-family: var(--police-mono);
   opacity: 0.9;
+  pointer-events: none; // Le HUD ne capte pas les clics
 }
 
-#hud .hp {
-  background: rgba(255, 0, 0, 0.2);
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-#hud .hint {
-  opacity: 0.6;
-}
-
-/* INVENTAIRE */
-#inventory {
-  position: absolute;
-  bottom: 30px;
+// ─── Inventaire ───────────────────────────────────────────────────────────────
+#inventaire {
+  display: none;
+  position: fixed;
+  bottom: 3vh;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(20,20,25,0.9);
-  border: 1px solid rgba(255,255,255,0.1);
-  padding: 15px;
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  width: 260px;
+  width: fit-content;
+  max-width: 95vw; // Limite sur mobile
+  background: var(--couleur-inventaire);
+  padding: var(--inventaire-padding);
+  border-radius: var(--rayon-normal);
+  backdrop-filter: blur(3px);
+  flex-direction: column;
+
+  &.actif {
+    display: flex;
+  }
 }
 
-.inventory-title {
-  color: white;
-  font-size: 12px;
+.titre {
+  text-align: center;
   margin-bottom: 10px;
   opacity: 0.8;
-  text-align: center;
+  font-family: var(--police-principale);
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+.grille {
+  display: flex;
+  flex-direction: row;
+  gap: var(--inventaire-gap);
+  overflow-x: auto;      // Scroll horizontal sur mobile
+  overflow-y: hidden;
+  padding-bottom: 4px;   // Évite que la scrollbar coupe les slots
+
+  // Scrollbar discrète
+  scrollbar-width: thin;
+  scrollbar-color: var(--couleur-slot-survol) transparent;
 }
 
+// ─── Slots ────────────────────────────────────────────────────────────────────
 .slot {
-  width: 60px;
-  height: 60px;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
-  transition: 0.15s;
+  flex-shrink: 0; // Empêche la compression sur mobile
+  width: 52px;
+  height: 52px;
+  background: var(--couleur-slot);
+  border-radius: var(--rayon-slot);
+  transition: background 0.15s, transform 0.15s;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--couleur-slot-survol);
+    transform: scale(1.05);
+  }
 }
 
-.slot:hover {
-  background: rgba(255,255,255,0.1);
-  transform: scale(1.05);
-}
+// ─── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 600px) {
+  #hud {
+    font-size: var(--taille-texte-hud-mobile);
+    top: 6px;
+    left: 6px;
+  }
 
-/* hidden state */
-.hidden {
-  display: none;
+  #inventaire {
+    bottom: 2vh;
+    width: 95vw;
+  }
 }
