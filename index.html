@@ -1,13 +1,39 @@
 <!doctype html>
+
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/patate.png" />
+    <!-- <link rel="stylesheet" href="/src/style.scss" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Boxaquifa</title>
   </head>
+
   <body>
-    <div id="app"></div>
+    <div id="game"></div>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hp">❤️ 100</div>
+      <div class="hint">Flèches pour bouger</div>
+      <div>Press I = inventory</div>
+    </div>
+
+    <!-- INVENTAIRE -->
+    <div id="inventory" class="hidden">
+      <div class="inventory-title">INVENTAIRE</div>
+      <div class="grid">
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+        <div class="slot"></div>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
+
 </html>
