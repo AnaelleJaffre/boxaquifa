@@ -6,11 +6,10 @@ export default class Joueur {
     this.scene = scene;
     this.vie = CONFIG_JEU.VIE_MAX_JOUEUR;
 
-    this.sprite = scene.add.circle(
+    this.sprite = scene.physics.add.sprite(
       scene.scale.width / 2,
       scene.scale.height / 2,
-      10,
-      CONFIG_JEU.COULEUR_JOUEUR
+      CONFIG_JEU.CLE_SPRITE_JOUEUR
     );
 
     this.curseurs = scene.input.keyboard.createCursorKeys();

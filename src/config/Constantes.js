@@ -3,6 +3,7 @@ export const CONFIG_JEU = {
   VITESSE_JOUEUR: 5,
   COULEUR_JOUEUR: 0xffffff,
   VIE_MAX_JOUEUR: 100,
+  CLE_SPRITE_JOUEUR: "gwendo",
 
   // Inventaire
   NOMBRE_SLOTS: 8,
@@ -13,4 +14,5 @@ export const CONFIG_JEU = {
   ID_HUD: "hud",
   ID_INVENTAIRE: "inventaire",
   CLASSE_ACTIF: "actif",
+  COULEUR_FOND: "#252529",
 };

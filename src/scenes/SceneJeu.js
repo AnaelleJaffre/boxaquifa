@@ -9,6 +9,10 @@ export default class SceneJeu extends Phaser.Scene {
     super("SceneJeu");
   }
 
+  preload() {
+    this.load.image(CONFIG_JEU.CLE_SPRITE_JOUEUR, "personnages/gwendo.png");
+  }
+
   create() {
     this.joueur     = new Joueur(this);
     this.inventaire = new Inventaire();

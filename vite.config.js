@@ -1,5 +1,8 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/boxaquifa/"
+  base: "/boxaquifa/",
+  build: {
+    chunkSizeWarningLimit: 3000
+  }
 });
