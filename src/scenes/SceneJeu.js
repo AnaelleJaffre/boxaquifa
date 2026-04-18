@@ -10,7 +10,7 @@ export default class SceneJeu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image(CONFIG_JEU.CLE_SPRITE_JOUEUR, "personnages/gwendo.png");
+    this.load.image(CONFIG_JEU.CLE_SPRITE_JOUEUR, "assets/personnages/gwendo.png");
   }
 
   create() {

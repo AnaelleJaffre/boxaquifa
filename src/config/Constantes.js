@@ -5,6 +5,10 @@ export const CONFIG_JEU = {
   VIE_MAX_JOUEUR: 100,
   CLE_SPRITE_JOUEUR: "gwendo",
 
+  // Personnages
+  HAUTEUR_PERSONNAGE: 196,
+  LARGEUR_PERSONNAGE: 108,
+
   // Inventaire
   NOMBRE_SLOTS: 8,
   TOUCHE_INVENTAIRE: "I",
