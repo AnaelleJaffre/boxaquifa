@@ -6,8 +6,17 @@ export const CONFIG_JEU = {
   CLE_SPRITE_JOUEUR: "gwendo",
 
   // Personnages
-  HAUTEUR_PERSONNAGE: 196,
-  LARGEUR_PERSONNAGE: 108,
+  MIRA_FRAME_HAUTEUR: 196,
+  MIRA_FRAME_LARGEUR: 108,
+  MIRA_HITBOX_LARGEUR: 20,
+  MIRA_HITBOX_HAUTEUR: 12,
+
+  MIRA_FRAMES: {
+    BAS:    0,
+    GAUCHE: 1,
+    HAUT:   2,
+    DROITE: 3,
+  },
 
   // Inventaire
   NOMBRE_SLOTS: 8,
