@@ -31,6 +31,8 @@ export default class Carte {
     // Objets depuis les objectgroups
     this._chargerBatiments();
     this._chargerHerbes();
+    this._chargerFleurs();
+    this._chargerCoquillages();
     this._chargerFonctionnels();
   }
 
@@ -55,7 +57,6 @@ export default class Carte {
 
   _creerSpriteObjet(objet, profondeurReference) {
     const cle = this._gidVersCle(objet.gid);
-    console.log("gid:", objet.gid, "gid pur:", objet.gid & 0x1FFFFFFF, "index:", (objet.gid & 0x1FFFFFFF) - FIRSTGID_MORIDANO, "cle:", cle);
     if (!cle) return null;
 
     const { flipX, flipY } = this._flipDepuisGid(objet.gid);
@@ -79,9 +80,7 @@ export default class Carte {
 
   _chargerBatiments() {
     const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.BATIMENTS);
-    
-    console.log("couche Batiments:", couche);
-    console.log("objets:", couche?.objects);
+
     if (!couche) return;
     
 
@@ -96,7 +95,27 @@ export default class Carte {
     if (!couche) return;
 
     couche.objects.forEach((objet) => {
-      const sprite = this._creerSpriteObjet(objet, objet.y + 1);
+      const sprite = this._creerSpriteObjet(objet, objet.y);
+      if (sprite) this.objetsDepth.push(sprite);
+    });
+  }
+
+  _chargerFleurs() {
+    const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.FLEURS);
+    if (!couche) return;
+
+    couche.objects.forEach((objet) => {
+      const sprite = this._creerSpriteObjet(objet, objet.y);
+      if (sprite) this.objetsDepth.push(sprite);
+    });
+  }
+
+  _chargerCoquillages() {
+    const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.COQUILLAGES);
+    if (!couche) return;
+
+    couche.objects.forEach((objet) => {
+      const sprite = this._creerSpriteObjet(objet, objet.y);
       if (sprite) this.objetsDepth.push(sprite);
     });
   }

@@ -14,6 +14,8 @@ export const ASSETS = {
     OBJETS:       "GameObjects",
     BATIMENTS:    "GameObjects/Batiments",
     HERBES:       "GameObjects/Herbes",
+    FLEURS:       "GameObjects/Fleurs",
+    COQUILLAGES:       "GameObjects/Coquillages",
     FONCTIONNELS: "GameObjects/Fonctionnels",
   },
   OBJETS: {
