@@ -17,6 +17,11 @@
     ```
     Ça crée un dossier "dist" qui contient le jeu, plus qu'à le push sur GitHub Pages GG dans la matrice for sure.
 
+- Pour déployer sur GitHub Pages
+    ```
+    npm run deploy
+    ```
+
 ## Import d'une carte Tiled
 
 ### Tiled
