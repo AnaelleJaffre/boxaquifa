@@ -14,13 +14,19 @@ export default class SceneJeu extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON(ASSETS.CARTE.CLE, ASSETS.CARTE.CHEMIN);
 
+    // Tilesets classiques
     ASSETS.TILESETS.forEach(({ CLE, CHEMIN }) => {
-      this.load.spritesheet(CLE, CHEMIN, {
-        frameWidth:  32,
-        frameHeight: 32,
-      });
+      this.load.spritesheet(CLE, CHEMIN, { frameWidth: 30, frameHeight: 30 });
     });
 
+    // Objets individuels du tileset moridano
+    const objets = ASSETS.OBJETS_MORIDANO;
+
+    objets.forEach((nom) => {
+      this.load.image(nom, `assets/tilesets/moridona/objets/${nom}.png`);
+    });
+
+    // Mira
     this.load.spritesheet(
       ASSETS.PERSONNAGES.MIRA.CLE,
       ASSETS.PERSONNAGES.MIRA.CHEMIN,
@@ -39,7 +45,7 @@ export default class SceneJeu extends Phaser.Scene {
     const depart = this.carte.obtenirPointDepart();
     this.joueur = new Joueur(this, depart.x, depart.y);
 
-    // Collisions joueur ↔ carte
+    // Collisions joueur <-> carte
     this.carte.activerCollisionJoueur(this.joueur.sprite);
 
     this.inventaire = new Inventaire();
@@ -65,25 +71,12 @@ export default class SceneJeu extends Phaser.Scene {
   update() {
     this.joueur.mettreAJour();
     this.carte.mettreAJourDepth(this.joueur.sprite);
-    this.children.depthSort();
+    // this.children.depthSort();
 
     if (Phaser.Input.Keyboard.JustDown(this.toucheInventaire)) {
       const ouvert = this.inventaire.basculer();
       this.interface.afficherInventaire(ouvert);
     }
-
-    const tuileLaPlusProche = this.carte.objetsDepth.reduce((proche, tuile) => {
-      const distActuelle = Math.abs(tuile.y - this.joueur.sprite.y);
-      const distProche = Math.abs(proche.y - this.joueur.sprite.y);
-      return distActuelle < distProche ? tuile : proche;
-    });
-
-    console.log(
-      "pied joueur:", this.joueur.sprite.y + this.joueur.sprite.displayHeight / 2,
-      "depth joueur:", this.joueur.sprite.depth,
-      "depth tuile proche:", tuileLaPlusProche.depth,
-      "y tuile proche:", tuileLaPlusProche.y
-    );
 
   }
 }

@@ -1,3 +1,6 @@
+# General
+tiled_ressources
+
 # Logs
 logs
 *.log
@@ -12,6 +15,7 @@ dist
 dist-ssr
 *.local
 .env
+.vite
 
 # Editor directories and files
 .vscode/*
