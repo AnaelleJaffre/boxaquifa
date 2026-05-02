@@ -36,4 +36,8 @@ export const ASSETS = {
   PERSONNAGES: {
     MIRA: { CLE: "mira", CHEMIN: "assets/personnages/mira_spritesheet.png" },
   },
+  SONS: {
+    DEPLACEMENT: { CLE: "pas",   CHEMIN: "assets/sons/actions/marcher_1.mp3" },
+    THEME_MORIDONA: { CLE: "theme_moridona", CHEMIN: "assets/sons/themes/moridona-theme.mp3" },
+  },
 };

@@ -5,6 +5,7 @@ import Joueur from "../entites/Joueur.js";
 import Inventaire from "../systemes/Inventaire.js";
 import Interface from "../ui/Interface.js";
 import Carte from "../systemes/Carte.js";
+import Son from "../systemes/Son.js";
 
 export default class SceneJeu extends Phaser.Scene {
   constructor() {
@@ -13,6 +14,8 @@ export default class SceneJeu extends Phaser.Scene {
 
   preload() {
     this.load.tilemapTiledJSON(ASSETS.CARTE.CLE, ASSETS.CARTE.CHEMIN);
+    this.load.audio(ASSETS.SONS.DEPLACEMENT.CLE,    ASSETS.SONS.DEPLACEMENT.CHEMIN);
+    this.load.audio(ASSETS.SONS.THEME_MORIDONA.CLE, ASSETS.SONS.THEME_MORIDONA.CHEMIN);
 
     // Tilesets classiques
     ASSETS.TILESETS.forEach(({ CLE, CHEMIN }) => {
@@ -52,6 +55,11 @@ export default class SceneJeu extends Phaser.Scene {
     this.interface  = new Interface();
     this.interface.mettreAJourVie(this.joueur.obtenirVie());
 
+    // Son du jeu
+    this.son = new Son(this);
+    this.son.creer();
+    console.log("volume theme:", CONFIG_JEU.VOLUME_THEME);
+    
     this.cameras.main.setBounds(
       0, 0,
       this.carte.tilemap.widthInPixels,
@@ -71,7 +79,7 @@ export default class SceneJeu extends Phaser.Scene {
   update() {
     this.joueur.mettreAJour();
     this.carte.mettreAJourDepth(this.joueur.sprite);
-    // this.children.depthSort();
+    this.son.mettreAJourPas(this.joueur.estEnMouvement());
 
     if (Phaser.Input.Keyboard.JustDown(this.toucheInventaire)) {
       const ouvert = this.inventaire.basculer();

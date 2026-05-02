@@ -34,6 +34,11 @@ export default class Joueur {
     anims.create({ key: "mira-droite",   frames: [{ key: cle, frame: CONFIG_JEU.MIRA_FRAMES.DROITE }], frameRate: 1 });
   }
 
+  estEnMouvement() {
+    const { left, right, up, down } = this.curseurs;
+    return left?.isDown || right?.isDown || up?.isDown || down?.isDown;
+  }
+
   mettreAJour() {
     const vitesse = CONFIG_JEU.VITESSE_JOUEUR;
     const { left, right, up, down } = this.curseurs;

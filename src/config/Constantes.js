@@ -28,4 +28,8 @@ export const CONFIG_JEU = {
   ID_INVENTAIRE: "inventaire",
   CLASSE_ACTIF: "actif",
   COULEUR_FOND: "#252529",
+
+  // Son
+  VOLUME_THEME: 0.2,
+  VOLUME_PAS:   0.3,
 };
