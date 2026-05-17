@@ -16,6 +16,7 @@ export default class SceneJeu extends Phaser.Scene {
   preload() {
     this.load.tilemapTiledJSON(ASSETS.CARTE.CLE, ASSETS.CARTE.CHEMIN);
     this.load.audio(ASSETS.SONS.DEPLACEMENT.CLE,    ASSETS.SONS.DEPLACEMENT.CHEMIN);
+    this.load.audio(ASSETS.SONS.DEPLACEMENT_HERBE.CLE,    ASSETS.SONS.DEPLACEMENT_HERBE.CHEMIN);
     this.load.audio(ASSETS.SONS.THEME_MORIDONA.CLE, ASSETS.SONS.THEME_MORIDONA.CHEMIN);
 
     // Tilesets classiques
@@ -82,7 +83,7 @@ export default class SceneJeu extends Phaser.Scene {
     this.joueur.mettreAJour(this.tactile);
     this.son.mettreAJourPas(this.joueur.estEnMouvement());
     this.carte.mettreAJourDepth(this.joueur.sprite);
-    this.carte.animerVegetation(this.joueur.sprite);
+    this.carte.animerVegetation(this.joueur.sprite, this.son);
 
     if (Phaser.Input.Keyboard.JustDown(this.toucheInventaire)) {
       const ouvert = this.inventaire.basculer();

@@ -36,6 +36,7 @@ export const CONFIG_JEU = {
   // Son
   VOLUME_THEME: 0.2,
   VOLUME_PAS:   0.3,
+  VOLUME_VEGETATION: 0.7,
 
   // Mode Tactile
   TACTILE_SEUIL: 15, 
@@ -46,4 +47,5 @@ export const CONFIG_JEU = {
   VEGETATION_DELAI_RETOUR_MS:        50,
   VEGETATION_DUREE_RETOUR_MS:        600,
   VEGETATION_ROTATION_MAX:           0.25,
+  COOLDOWN_SON_VEGETATION_MS:        700,
 };

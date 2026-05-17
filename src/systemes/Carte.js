@@ -194,7 +194,7 @@ export default class Carte {
     spriteJoueur.setDepth(piedJoueur);
   }
 
-  animerVegetation(spriteJoueur) {
+  animerVegetation(spriteJoueur, son) {
     const maintenant  = this.scene.time.now;
     const distance    = CONFIG_JEU.VEGETATION_DISTANCE_DECLENCHEMENT;
     const dureeAller  = CONFIG_JEU.VEGETATION_DUREE_ALLER_MS;
@@ -218,6 +218,7 @@ export default class Carte {
       img.enAller        = true;
       img.timestampAller = maintenant;
       img.rotationCible  = dx > 0 ? rotMax : -rotMax;
+      son.jouerBruitVegetation();
       } else if (img.enAller) {
         const progression = Math.min((maintenant - img.timestampAller) / dureeAller, 1);
         img.rotation = img.rotationCible * progression;

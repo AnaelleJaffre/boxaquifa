@@ -23,6 +23,16 @@ export default class Son {
     this.theme.play();
   }
 
+  jouerBruitVegetation() {
+    const maintenant = this.scene.time.now;
+    if (maintenant - (this.dernierBruitVegetation ?? 0) < CONFIG_JEU.COOLDOWN_SON_VEGETATION_MS) return;
+    
+    this.dernierBruitVegetation = maintenant;
+    this.scene.sound.play(ASSETS.SONS.DEPLACEMENT_HERBE.CLE, {
+      volume: CONFIG_JEU.VOLUME_VEGETATION,
+    });
+  }
+
   mettreAJourPas(joueurEnMouvement) {
     if (joueurEnMouvement && !this.joueLesPas) {
       this.sonPas.play();
