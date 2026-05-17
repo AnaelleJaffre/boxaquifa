@@ -39,13 +39,14 @@ export default class Joueur {
     return left?.isDown || right?.isDown || up?.isDown || down?.isDown;
   }
 
-  mettreAJour() {
+  mettreAJour(tactile = null) {
     const vitesse = CONFIG_JEU.VITESSE_JOUEUR;
     const { left, right, up, down } = this.curseurs;
     const corps = this.sprite.body;
 
     corps.setVelocity(0);
 
+    // Clavier
     if (left?.isDown) {
       corps.setVelocityX(-vitesse * 60);
       this.sprite.anims.play("mira-gauche", true);
@@ -58,7 +59,30 @@ export default class Joueur {
     } else if (down?.isDown) {
       corps.setVelocityY(vitesse * 60);
       this.sprite.anims.play("mira-bas", true);
+
+    // Tactile
+    } else if (tactile?.estActif()) {
+      const dir = tactile.obtenirDirection();
+      corps.setVelocityX(dir.x * vitesse * 60);
+      corps.setVelocityY(dir.y * vitesse * 60);
+
+      // Animation selon direction dominante
+      if (Math.abs(dir.x) > Math.abs(dir.y)) {
+        this.sprite.anims.play(dir.x > 0 ? "mira-droite" : "mira-gauche", true);
+      } else {
+        this.sprite.anims.play(dir.y > 0 ? "mira-bas" : "mira-haut", true);
+      }
     }
+  }
+
+  estEnMouvement() {
+    const { left, right, up, down } = this.curseurs;
+    const corps = this.sprite.body;
+    return (
+      left?.isDown || right?.isDown ||
+      up?.isDown   || down?.isDown  ||
+      corps.velocity.x !== 0 || corps.velocity.y !== 0
+    );
   }
 
   obtenirVie() {

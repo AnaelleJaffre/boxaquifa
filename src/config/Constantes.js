@@ -32,4 +32,7 @@ export const CONFIG_JEU = {
   // Son
   VOLUME_THEME: 0.2,
   VOLUME_PAS:   0.3,
+
+  // Mode Tactile
+  TACTILE_SEUIL: 2, 
 };

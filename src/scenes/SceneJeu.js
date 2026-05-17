@@ -6,6 +6,7 @@ import Inventaire from "../systemes/Inventaire.js";
 import Interface from "../ui/Interface.js";
 import Carte from "../systemes/Carte.js";
 import Son from "../systemes/Son.js";
+import Tactile from "../systemes/Tactile.js";
 
 export default class SceneJeu extends Phaser.Scene {
   constructor() {
@@ -44,6 +45,8 @@ export default class SceneJeu extends Phaser.Scene {
     this.carte = new Carte(this);
     this.carte.creer();
     this.children.depthSort();
+    this.tactile = new Tactile(this);
+    this.tactile.creer();
 
     const depart = this.carte.obtenirPointDepart();
     this.joueur = new Joueur(this, depart.x, depart.y);
@@ -77,9 +80,9 @@ export default class SceneJeu extends Phaser.Scene {
   }
 
   update() {
-    this.joueur.mettreAJour();
-    this.carte.mettreAJourDepth(this.joueur.sprite);
+    this.joueur.mettreAJour(this.tactile);
     this.son.mettreAJourPas(this.joueur.estEnMouvement());
+    this.carte.mettreAJourDepth(this.joueur.sprite);
 
     if (Phaser.Input.Keyboard.JustDown(this.toucheInventaire)) {
       const ouvert = this.inventaire.basculer();
