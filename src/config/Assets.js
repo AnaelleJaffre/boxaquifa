@@ -15,8 +15,9 @@ export const ASSETS = {
     BATIMENTS:    "GameObjects/Batiments",
     HERBES:       "GameObjects/Herbes",
     FLEURS:       "GameObjects/Fleurs",
-    COQUILLAGES:       "GameObjects/Coquillages",
+    COQUILLAGES:  "GameObjects/Coquillages",
     FONCTIONNELS: "GameObjects/Fonctionnels",
+    COLLISIONS:   "GameObjects/Collisions",
   },
   OBJETS: {
     POINT_DEPART: "Spone",

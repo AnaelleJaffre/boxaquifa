@@ -3,7 +3,9 @@ import "./style.scss";
 import SceneJeu from "./scenes/SceneJeu.js";
 import { CONFIG_JEU } from "./config/Constantes.js";
 
+
 const config = {
+  arcade: { debug: true },
   type: Phaser.AUTO,
   parent: CONFIG_JEU.ID_JEU,
   physics: {

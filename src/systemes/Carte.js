@@ -28,12 +28,15 @@ export default class Carte {
       .createLayer(ASSETS.CALQUES.SOL, tilesets)
       .setDepth(1);
 
+    this.corpsStatiques = [];
+
     // Objets depuis les objectgroups
     this._chargerBatiments();
     this._chargerHerbes();
     this._chargerFleurs();
     this._chargerCoquillages();
     this._chargerFonctionnels();
+    this._creerCollisions();  // nouveau : corps physiques 
   }
 
   _obtenirFirstGidMonridano() {
@@ -80,9 +83,7 @@ export default class Carte {
 
   _chargerBatiments() {
     const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.BATIMENTS);
-
     if (!couche) return;
-    
 
     couche.objects.forEach((objet) => {
       const sprite = this._creerSpriteObjet(objet, objet.y);
@@ -129,9 +130,35 @@ export default class Carte {
     });
   }
 
+  _creerCollisions() {
+    const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.COLLISIONS);
+    if (!couche) return;
+
+    couche.objects.forEach((objet) => {
+      const zone = this.scene.add.rectangle(
+        objet.x + objet.width / 2,
+        objet.y + objet.height / 2 + 15,
+        objet.width,
+        objet.height
+      );
+      this.scene.physics.add.existing(zone, true);
+      this.corpsStatiques.push(zone);
+    });
+  }
+
   activerCollisionJoueur(spriteJoueur) {
-    // Les collisions seront gerees via overlap sur les objets nommes
-    // (poubelle, maison) dans SceneJeu — pas de calque de collision ici
+    // Limites de la map
+    spriteJoueur.body.setCollideWorldBounds(true);
+    this.scene.physics.world.setBounds(
+      0, 0,
+      this.tilemap.widthInPixels,
+      this.tilemap.heightInPixels
+    );
+
+    // Collisions avec les rectangles Tiled
+    this.corpsStatiques.forEach((zone) => {
+      this.scene.physics.add.collider(spriteJoueur, zone);
+    });
   }
 
   mettreAJourDepth(spriteJoueur) {
