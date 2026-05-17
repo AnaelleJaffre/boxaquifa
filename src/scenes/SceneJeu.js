@@ -61,7 +61,6 @@ export default class SceneJeu extends Phaser.Scene {
     // Son du jeu
     this.son = new Son(this);
     this.son.creer();
-    console.log("volume theme:", CONFIG_JEU.VOLUME_THEME);
     
     this.cameras.main.setBounds(
       0, 0,
