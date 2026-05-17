@@ -29,6 +29,7 @@ export default class Carte {
     this._chargerCoquillages();
     this._chargerFonctionnels();
     this._creerCollisions();
+    this._initialiserVent();
   }
 
   // ─── Tileset ────────────────────────────────────────────────────────────────
@@ -201,6 +202,7 @@ export default class Carte {
     const delai       = CONFIG_JEU.VEGETATION_DELAI_RETOUR_MS;
     const dureeRetour = CONFIG_JEU.VEGETATION_DUREE_RETOUR_MS;
     const rotMax      = CONFIG_JEU.VEGETATION_ROTATION_MAX;
+    const rotationVent = this._animerVent();
 
     const piedX = spriteJoueur.x;
     const piedY = spriteJoueur.y + spriteJoueur.displayHeight / 2;
@@ -213,18 +215,17 @@ export default class Carte {
       const dy   = piedY - img.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      // Nouveau declenchement uniquement si le joueur bouge
       if (joueurBouge && dist < distance && !img.enAller && !img.enRetour && img.timestampRetour === null) {
-      img.enAller        = true;
-      img.timestampAller = maintenant;
-      img.rotationCible  = dx > 0 ? rotMax : -rotMax;
-      son.jouerBruitVegetation();
+        img.enAller        = true;
+        img.timestampAller = maintenant;
+        img.rotationCible  = dx > 0 ? rotMax : -rotMax;
+        son.jouerBruitVegetation();
+
       } else if (img.enAller) {
         const progression = Math.min((maintenant - img.timestampAller) / dureeAller, 1);
         img.rotation = img.rotationCible * progression;
-
         if (progression >= 1) {
-          img.enAller        = false;
+          img.enAller         = false;
           img.timestampRetour = maintenant + delai;
         }
 
@@ -238,15 +239,63 @@ export default class Carte {
       } else if (img.enRetour) {
         const progression = Math.min((maintenant - img.timestampDebut) / dureeRetour, 1);
         img.rotation = img.rotationDepart * (1 - progression);
-
         if (progression >= 1) {
           img.rotation        = 0;
           img.enRetour        = false;
           img.timestampRetour = null;
         }
       }
+
+      if (img.enAller || img.enRetour || img.timestampRetour !== null) {
+        img.rotation += rotationVent * 0.4;
+      } else {
+        img.rotation = rotationVent;
+      }
     });
   }
+
+  // ___ Vent __________________________________________________________________
+
+  _initialiserVent() {
+    this.vent = {
+      timestampDebut:  this.scene.time.now,
+      duree:           CONFIG_JEU.VENT_DUREE_MS,
+      rotationCible:   this._nouvelAngleVent(),
+      rotationDepart:  0,
+    };
+    }
+
+    _nouvelAngleVent() {
+    const base      = CONFIG_JEU.VENT_ROTATION_MAX;
+    const variation = CONFIG_JEU.VENT_VARIATION;
+    // Alterne gauche/droite avec légère variation aléatoire
+    const signe = this.vent?.rotationCible > 0 ? -1 : 1;
+    return signe * (base + (Math.random() * variation - variation / 2));
+    }
+
+    _animerVent() {
+    const maintenant = this.scene.time.now;
+    const progression = Math.min(
+      (maintenant - this.vent.timestampDebut) / this.vent.duree,
+      1
+    );
+    console.log("vent progression:", progression.toFixed(2), "cible:", this.vent.rotationCible.toFixed(3));
+
+
+    // Interpolation sinusoïdale pour un mouvement doux
+    const t = Math.sin(progression * Math.PI / 2);
+    const rotationVent = this.vent.rotationDepart + 
+      (this.vent.rotationCible - this.vent.rotationDepart) * t;
+
+    // Nouveau cycle
+    if (progression >= 1) {
+      this.vent.rotationDepart = this.vent.rotationCible;
+      this.vent.rotationCible  = this._nouvelAngleVent();
+      this.vent.timestampDebut = maintenant;
+    }
+
+    return rotationVent;
+    }
 
   // ─── Accès ──────────────────────────────────────────────────────────────────
 
