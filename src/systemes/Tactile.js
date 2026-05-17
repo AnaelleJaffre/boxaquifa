@@ -16,33 +16,39 @@ export default class Tactile {
     const input = this.scene.input;
 
     input.on("pointerdown", (pointeur) => {
-        if (this._surInterface(pointeur)) return;
-        this.actif = true;
-        this.positionPrecedente = { x: pointeur.x, y: pointeur.y };
+      if (this._surInterface(pointeur)) return;
+      this.actif = true;
+      this.positionPrecedente = { x: pointeur.x, y: pointeur.y };
     });
 
     input.on("pointermove", (pointeur) => {
-        if (!this.actif || !this.positionPrecedente) return;
-        if (!pointeur.isDown) return;
+      if (!this.actif || !this.positionPrecedente) return;
+      if (!pointeur.isDown) return;
 
-        const dx = pointeur.x - this.positionPrecedente.x;
-        const dy = pointeur.y - this.positionPrecedente.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+      const dx = pointeur.x - this.positionPrecedente.x;
+      const dy = pointeur.y - this.positionPrecedente.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
-        // Micro-seuil — ignore les tremblements
-        if (distance < CONFIG_JEU.TACTILE_SEUIL) return;
+      // Micro-seuil — ignore les tremblements
+      if (distance < CONFIG_JEU.TACTILE_SEUIL) return;
 
-        // Change la direction selon le delta
-        if (Math.abs(dx) > Math.abs(dy)) {
+      // Change la direction selon le delta
+      if (Math.abs(dx) > Math.abs(dy)) {
         this.direction = { x: dx > 0 ? 1 : -1, y: 0 };
-        } else {
+      } else {
         this.direction = { x: 0, y: dy > 0 ? 1 : -1 };
-        }
+      }
 
-        // Met à jour la position de référence pour le prochain delta
-        this.positionPrecedente = { x: pointeur.x, y: pointeur.y };
+      // Met à jour la position de référence pour le prochain delta
+      this.positionPrecedente = { x: pointeur.x, y: pointeur.y };
     });
-    }
+
+    input.on("pointerup", () => {
+      this.actif = false;
+      this.positionPrecedente = null;
+      this.direction = { x: 0, y: 0 };
+    });
+  }
 
   obtenirDirection() {
     // Garantit qu'une seule des deux composantes est non nulle

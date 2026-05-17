@@ -34,5 +34,5 @@ export const CONFIG_JEU = {
   VOLUME_PAS:   0.3,
 
   // Mode Tactile
-  TACTILE_SEUIL: 2, 
+  TACTILE_SEUIL: 15, 
 };

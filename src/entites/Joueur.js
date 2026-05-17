@@ -46,11 +46,10 @@ export default class Joueur {
 
     corps.setVelocity(0);
 
-    // Clavier
-    if (left?.isDown) {
+    if (left?.isDown && !up?.isDown && !down?.isDown) {
       corps.setVelocityX(-vitesse * 60);
       this.sprite.anims.play("mira-gauche", true);
-    } else if (right?.isDown) {
+    } else if (right?.isDown && !up?.isDown && !down?.isDown) {
       corps.setVelocityX(vitesse * 60);
       this.sprite.anims.play("mira-droite", true);
     } else if (up?.isDown) {
@@ -59,18 +58,22 @@ export default class Joueur {
     } else if (down?.isDown) {
       corps.setVelocityY(vitesse * 60);
       this.sprite.anims.play("mira-bas", true);
-
-    // Tactile
     } else if (tactile?.estActif()) {
       const dir = tactile.obtenirDirection();
-      corps.setVelocityX(dir.x * vitesse * 60);
-      corps.setVelocityY(dir.y * vitesse * 60);
 
-      // Animation selon direction dominante
-      if (Math.abs(dir.x) > Math.abs(dir.y)) {
-        this.sprite.anims.play(dir.x > 0 ? "mira-droite" : "mira-gauche", true);
+      if (dir.x !== 0 || dir.y !== 0) {
+        corps.setVelocityX(dir.x * vitesse * 60);
+        corps.setVelocityY(dir.y * vitesse * 60);
+
+        if (Math.abs(dir.x) > Math.abs(dir.y)) {
+          this.sprite.anims.play(dir.x > 0 ? "mira-droite" : "mira-gauche", true);
+        } else {
+          this.sprite.anims.play(dir.y > 0 ? "mira-bas" : "mira-haut", true);
+        }
       } else {
-        this.sprite.anims.play(dir.y > 0 ? "mira-bas" : "mira-haut", true);
+        // Doigt posé mais pas de mouvement — arrêt
+        corps.setVelocity(0);
+        this.sprite.anims.stop();
       }
     }
   }

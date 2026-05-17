@@ -88,6 +88,5 @@ export default class SceneJeu extends Phaser.Scene {
       const ouvert = this.inventaire.basculer();
       this.interface.afficherInventaire(ouvert);
     }
-
   }
 }
