@@ -41,4 +41,5 @@ export const ASSETS = {
     DEPLACEMENT: { CLE: "pas",   CHEMIN: "assets/sons/actions/marcher_1.mp3" },
     THEME_MORIDONA: { CLE: "theme_moridona", CHEMIN: "assets/sons/themes/moridona-theme.mp3" },
   },
+  FIRSTGID_MORIDANO_FALLBACK: 2369,
 };

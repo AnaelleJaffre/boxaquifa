@@ -1,4 +1,8 @@
 export const CONFIG_JEU = {
+
+  // Objets
+  DEPTH_SOL_OBJETS: 1.5,
+
   // Joueur
   VITESSE_JOUEUR: 5,
   COULEUR_JOUEUR: 0xffffff,
@@ -35,4 +39,11 @@ export const CONFIG_JEU = {
 
   // Mode Tactile
   TACTILE_SEUIL: 15, 
+
+  // Animations
+  VEGETATION_DISTANCE_DECLENCHEMENT: 40,
+  VEGETATION_DUREE_ALLER_MS:         200,
+  VEGETATION_DELAI_RETOUR_MS:        50,
+  VEGETATION_DUREE_RETOUR_MS:        600,
+  VEGETATION_ROTATION_MAX:           0.25,
 };

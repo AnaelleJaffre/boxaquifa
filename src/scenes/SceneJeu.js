@@ -82,6 +82,7 @@ export default class SceneJeu extends Phaser.Scene {
     this.joueur.mettreAJour(this.tactile);
     this.son.mettreAJourPas(this.joueur.estEnMouvement());
     this.carte.mettreAJourDepth(this.joueur.sprite);
+    this.carte.animerVegetation(this.joueur.sprite);
 
     if (Phaser.Input.Keyboard.JustDown(this.toucheInventaire)) {
       const ouvert = this.inventaire.basculer();

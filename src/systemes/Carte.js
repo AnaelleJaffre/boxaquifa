@@ -1,14 +1,15 @@
 import { ASSETS } from "../config/Assets.js";
-
-// Correspondance gid -> cle texture (firstgid du tileset moridano = 2305)
-const FIRSTGID_MORIDANO = 2305;
+import { CONFIG_JEU } from "../config/Constantes.js";
+import * as Phaser from "phaser";
 
 export default class Carte {
   constructor(scene) {
     this.scene = scene;
     this.calques = {};
-    this.objets = {};       // Objets fonctionnels (portes, spawn...)
-    this.objetsDepth = [];  // Sprites soumis au depth sorting
+    this.objets = {};
+    this.objetsDepth = [];
+    this.zonesVegetation = []; // Herbes + fleurs
+    this.corpsStatiques = [];
   }
 
   creer() {
@@ -19,35 +20,27 @@ export default class Carte {
       this.tilemap.addTilesetImage(CLE, CLE)
     );
 
-    // Calques de sol — depth fixe, toujours derrière
-    this.calques.fond = this.tilemap
-      .createLayer(ASSETS.CALQUES.FOND, tilesets)
-      .setDepth(0);
+    this.calques.fond = this.tilemap.createLayer(ASSETS.CALQUES.FOND, tilesets).setDepth(0);
+    this.calques.sol  = this.tilemap.createLayer(ASSETS.CALQUES.SOL,  tilesets).setDepth(1);
 
-    this.calques.sol = this.tilemap
-      .createLayer(ASSETS.CALQUES.SOL, tilesets)
-      .setDepth(1);
-
-    this.corpsStatiques = [];
-
-    // Objets depuis les objectgroups
     this._chargerBatiments();
-    this._chargerHerbes();
-    this._chargerFleurs();
+    this._chargerVegetation(ASSETS.CALQUES.HERBES);
+    this._chargerVegetation(ASSETS.CALQUES.FLEURS);
     this._chargerCoquillages();
     this._chargerFonctionnels();
-    this._creerCollisions();  // nouveau : corps physiques 
+    this._creerCollisions();
   }
 
+  // ─── Tileset ────────────────────────────────────────────────────────────────
+
   _obtenirFirstGidMonridano() {
-    const donneesBrutes = this.tilemap.tilesets;
-    const tileset = donneesBrutes.find(t => t.name === "moridano");
-    return tileset?.firstgid ?? 2369; // fallback en dur
+    const tileset = this.tilemap.tilesets.find(t => t.name === "moridano");
+    return tileset?.firstgid ?? ASSETS.FIRSTGID_MORIDANO_FALLBACK;
   }
 
   _gidVersCle(gid) {
     const gidPur = gid & 0x1FFFFFFF;
-    const index = gidPur - this.firstGidMonridano;
+    const index  = gidPur - this.firstGidMonridano;
     return ASSETS.OBJETS_MORIDANO[index] ?? null;
   }
 
@@ -58,28 +51,58 @@ export default class Carte {
     };
   }
 
-  _creerSpriteObjet(objet, profondeurReference) {
+  // ─── Creation de sprites ────────────────────────────────────────────────────
+
+  _creerSpriteObjet(objet, depth) {
     const cle = this._gidVersCle(objet.gid);
     if (!cle) return null;
 
     const { flipX, flipY } = this._flipDepuisGid(objet.gid);
 
-    // Tiled : origine en bas-gauche pour les objets tileset
     const img = this.scene.add.image(
-      objet.x + objet.width / 2,
+      objet.x + objet.width  / 2,
       objet.y - objet.height / 2,
       cle
     );
 
     img.setFlip(flipX, flipY);
     img.setDisplaySize(objet.width, objet.height);
-
-    // Depth = Y du bas de l'objet (pieds)
-    const depth = profondeurReference ?? (objet.y);
-    img.setDepth(depth);
+    img.setDepth(depth ?? objet.y);
 
     return img;
   }
+
+  _creerSpriteVegetation(objet) {
+    const cle = this._gidVersCle(objet.gid);
+    if (!cle) return null;
+
+    const { flipX, flipY } = this._flipDepuisGid(objet.gid);
+
+    const img = this.scene.add.image(
+      objet.x + objet.width / 2,
+      objet.y, // origine bas
+      cle
+    );
+
+    img.setOrigin(0.5, 1);
+    img.setFlip(flipX, flipY);
+    img.setDisplaySize(objet.width, objet.height);
+    img.setDepth(objet.y + 0.5);
+
+    // etat d'animation
+    img.enAller          = false;
+    img.enRetour         = false;
+    img.timestampAller   = null;
+    img.timestampRetour  = null;
+    img.timestampDebut   = null;
+    img.rotationCible    = 0;
+    img.rotationDepart   = 0;
+    img.rotation         = 0;
+
+    return img;
+  }
+
+  // ─── Chargement des calques ─────────────────────────────────────────────────
 
   _chargerBatiments() {
     const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.BATIMENTS);
@@ -91,23 +114,26 @@ export default class Carte {
     });
   }
 
-  _chargerHerbes() {
-    const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.HERBES);
+  _chargerVegetation(nomCalque) {
+    const couche = this.tilemap.getObjectLayer(nomCalque);
     if (!couche) return;
 
     couche.objects.forEach((objet) => {
-      const sprite = this._creerSpriteObjet(objet, objet.y);
-      if (sprite) this.objetsDepth.push(sprite);
-    });
-  }
+      const img = this._creerSpriteVegetation(objet);
+      if (!img) return;
 
-  _chargerFleurs() {
-    const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.FLEURS);
-    if (!couche) return;
+      // Zone de detection à la base
+      const zone = this.scene.add.rectangle(
+        objet.x + objet.width / 2,
+        objet.y - CONFIG_JEU.MIRA_HITBOX_HAUTEUR / 2,
+        objet.width,
+        CONFIG_JEU.MIRA_HITBOX_HAUTEUR
+      );
+      this.scene.physics.add.existing(zone, true);
+      zone.sprite = img;
 
-    couche.objects.forEach((objet) => {
-      const sprite = this._creerSpriteObjet(objet, objet.y);
-      if (sprite) this.objetsDepth.push(sprite);
+      this.zonesVegetation.push(zone);
+      this.objetsDepth.push(img);
     });
   }
 
@@ -116,7 +142,7 @@ export default class Carte {
     if (!couche) return;
 
     couche.objects.forEach((objet) => {
-      const sprite = this._creerSpriteObjet(objet, objet.y);
+      const sprite = this._creerSpriteObjet(objet, CONFIG_JEU.DEPTH_SOL_OBJETS);
       if (sprite) this.objetsDepth.push(sprite);
     });
   }
@@ -136,7 +162,7 @@ export default class Carte {
 
     couche.objects.forEach((objet) => {
       const zone = this.scene.add.rectangle(
-        objet.x + objet.width / 2,
+        objet.x + objet.width  / 2,
         objet.y + objet.height / 2 + 15,
         objet.width,
         objet.height
@@ -146,8 +172,9 @@ export default class Carte {
     });
   }
 
+  // ─── Physique ───────────────────────────────────────────────────────────────
+
   activerCollisionJoueur(spriteJoueur) {
-    // Limites de la map
     spriteJoueur.body.setCollideWorldBounds(true);
     this.scene.physics.world.setBounds(
       0, 0,
@@ -155,18 +182,72 @@ export default class Carte {
       this.tilemap.heightInPixels
     );
 
-    // Collisions avec les rectangles Tiled
     this.corpsStatiques.forEach((zone) => {
       this.scene.physics.add.collider(spriteJoueur, zone);
     });
   }
 
+  // ─── Mise à jour ────────────────────────────────────────────────────────────
+
   mettreAJourDepth(spriteJoueur) {
-    // Depth du joueur = Y de ses pieds
     const piedJoueur = spriteJoueur.y + spriteJoueur.displayHeight / 2;
     spriteJoueur.setDepth(piedJoueur);
-    // Les objets ont un depth fixe base sur leur Y bas — Phaser trie automatiquement
   }
+
+  animerVegetation(spriteJoueur) {
+    const maintenant  = this.scene.time.now;
+    const distance    = CONFIG_JEU.VEGETATION_DISTANCE_DECLENCHEMENT;
+    const dureeAller  = CONFIG_JEU.VEGETATION_DUREE_ALLER_MS;
+    const delai       = CONFIG_JEU.VEGETATION_DELAI_RETOUR_MS;
+    const dureeRetour = CONFIG_JEU.VEGETATION_DUREE_RETOUR_MS;
+    const rotMax      = CONFIG_JEU.VEGETATION_ROTATION_MAX;
+
+    const piedX = spriteJoueur.x;
+    const piedY = spriteJoueur.y + spriteJoueur.displayHeight / 2;
+
+    const joueurBouge = spriteJoueur.body.velocity.x !== 0 || spriteJoueur.body.velocity.y !== 0;
+
+    this.zonesVegetation.forEach((zone) => {
+      const img = zone.sprite;
+      const dx   = piedX - img.x;
+      const dy   = piedY - img.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Nouveau declenchement uniquement si le joueur bouge
+      if (joueurBouge && dist < distance && !img.enAller && !img.enRetour && img.timestampRetour === null) {
+      img.enAller        = true;
+      img.timestampAller = maintenant;
+      img.rotationCible  = dx > 0 ? rotMax : -rotMax;
+      } else if (img.enAller) {
+        const progression = Math.min((maintenant - img.timestampAller) / dureeAller, 1);
+        img.rotation = img.rotationCible * progression;
+
+        if (progression >= 1) {
+          img.enAller        = false;
+          img.timestampRetour = maintenant + delai;
+        }
+
+      } else if (!img.enAller && !img.enRetour && img.timestampRetour !== null) {
+        if (maintenant >= img.timestampRetour) {
+          img.enRetour       = true;
+          img.timestampDebut = maintenant;
+          img.rotationDepart = img.rotation;
+        }
+
+      } else if (img.enRetour) {
+        const progression = Math.min((maintenant - img.timestampDebut) / dureeRetour, 1);
+        img.rotation = img.rotationDepart * (1 - progression);
+
+        if (progression >= 1) {
+          img.rotation        = 0;
+          img.enRetour        = false;
+          img.timestampRetour = null;
+        }
+      }
+    });
+  }
+
+  // ─── Accès ──────────────────────────────────────────────────────────────────
 
   obtenirPointDepart() {
     const obj = this.objets[ASSETS.OBJETS.POINT_DEPART];
