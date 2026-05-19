@@ -124,16 +124,15 @@ canvas {
 // Indicateur de ramassage
 #indicateur-ramassage {
   position: fixed;
-  bottom: 12vh;
-  left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  display: none;
   background: var(--couleur-hud);
   border: 1px solid var(--couleur-hud-bordure);
   border-radius: var(--rayon-normal);
   padding: 6px 14px;
   font-family: var(--police-mono);
   font-size: var(--taille-texte-hud);
-  pointer-events: none;
 }
 
 // Slot avec icône

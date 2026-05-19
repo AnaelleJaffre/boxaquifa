@@ -100,7 +100,7 @@ export default class SceneJeu extends Phaser.Scene {
 
     // Interaction objet
     const objet = this.objetProche = this.carte.obtenirObjetProche(this.joueur.sprite)
-    this.interface.afficherIndicateurRamassage(objet)
+    this.interface.afficherIndicateurRamassage(this.objetProche, this.cameras.main)
 
     // Pickup
     if (Phaser.Input.Keyboard.JustDown(this.toucheRamasser) && objet) {
