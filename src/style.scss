@@ -121,21 +121,69 @@ canvas {
   scrollbar-color: var(--couleur-slot-survol) transparent;
 }
 
-// ─── Slots ────────────────────────────────────────────────────────────────────
+// Indicateur de ramassage
+#indicateur-ramassage {
+  position: fixed;
+  bottom: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--couleur-hud);
+  border: 1px solid var(--couleur-hud-bordure);
+  border-radius: var(--rayon-normal);
+  padding: 6px 14px;
+  font-family: var(--police-mono);
+  font-size: var(--taille-texte-hud);
+  pointer-events: none;
+}
+
+// Slot avec icône
 .slot {
-  flex-shrink: 0; // Empêche la compression sur mobile
-  width: 52px;
-  height: 52px;
-  background: var(--couleur-slot);
-  border-radius: var(--rayon-slot);
-  transition: background 0.15s, transform 0.15s;
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
 
   &:hover {
     background: var(--couleur-slot-survol);
     transform: scale(1.05);
   }
+
+  .slot-icone {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  .slot-nom {
+    font-size: 9px;
+    text-align: center;
+    opacity: 0.8;
+    line-height: 1.1;
+  }
+
+  .slot-quantite {
+    font-size: 10px;
+    font-family: var(--police-mono);
+    opacity: 0.9;
+  }
 }
+
+// ─── Slots ────────────────────────────────────────────────────────────────────
+// .slot {
+//   flex-shrink: 0; // Empêche la compression sur mobile
+//   width: 52px;
+//   height: 52px;
+//   background: var(--couleur-slot);
+//   border-radius: var(--rayon-slot);
+//   transition: background 0.15s, transform 0.15s;
+//   cursor: pointer;
+
+//   &:hover {
+//     background: var(--couleur-slot-survol);
+//     transform: scale(1.05);
+//   }
+// }
 
 // ─── Responsive ───────────────────────────────────────────────────────────────
 @media (max-width: 600px) {

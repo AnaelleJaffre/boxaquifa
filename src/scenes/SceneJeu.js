@@ -48,6 +48,7 @@ export default class SceneJeu extends Phaser.Scene {
     this.children.depthSort();
     this.tactile = new Tactile(this);
     this.tactile.creer();
+    this.objetProche = null;
 
     const depart = this.carte.obtenirPointDepart();
     this.joueur = new Joueur(this, depart.x, depart.y);
@@ -70,8 +71,12 @@ export default class SceneJeu extends Phaser.Scene {
     );
     this.cameras.main.startFollow(this.joueur.sprite, true, 0.1, 0.1);
 
+    // Touches
     this.toucheInventaire = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes[CONFIG_JEU.TOUCHE_INVENTAIRE]
+    );   
+    this.toucheRamasser = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes[CONFIG_JEU.TOUCHE_RAMASSER]
     );
 
     this.scale.on("resize", (gameSize) => {
@@ -79,15 +84,43 @@ export default class SceneJeu extends Phaser.Scene {
     });
   }
 
-  update() {
-    this.joueur.mettreAJour(this.tactile);
-    this.son.mettreAJourPas(this.joueur.estEnMouvement());
-    this.carte.mettreAJourDepth(this.joueur.sprite);
-    this.carte.animerVegetation(this.joueur.sprite, this.son);
 
+  update() {
+
+    // Joueur
+    this.joueur.mettreAJour(this.tactile)
+    this.son.mettreAJourPas(this.joueur.estEnMouvement())
+    this.carte.mettreAJourDepth(this.joueur.sprite)
+    this.carte.animerVegetation(this.joueur.sprite, this.son)
+
+    // Inventaire toggle
     if (Phaser.Input.Keyboard.JustDown(this.toucheInventaire)) {
-      const ouvert = this.inventaire.basculer();
-      this.interface.afficherInventaire(ouvert);
+      this.interface.afficherInventaire(this.inventaire.basculer())
+    }
+
+    // Interaction objet
+    const objet = this.objetProche = this.carte.obtenirObjetProche(this.joueur.sprite)
+    this.interface.afficherIndicateurRamassage(objet)
+
+    // Pickup
+    if (Phaser.Input.Keyboard.JustDown(this.toucheRamasser) && objet) {
+
+      if (this.inventaire.ajouterObjet({
+        cle: this.objetProche.cleStack,
+        nom: this.objetProche.nom,
+        icone: this.objetProche.icone,
+        quantite: this.objetProche.quantiteRamassee
+      })) {
+
+        this.carte.retirerObjet(objet)
+
+        this.interface.mettreAJourSlots(
+          this.inventaire.obtenirSlots()
+        )
+
+        this.objetProche = null
+      }
     }
   }
+
 }

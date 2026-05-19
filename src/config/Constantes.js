@@ -4,7 +4,7 @@ export const CONFIG_JEU = {
   DEPTH_SOL_OBJETS: 1.5,
 
   // Joueur
-  VITESSE_JOUEUR: 5,
+  VITESSE_JOUEUR: 4,
   COULEUR_JOUEUR: 0xffffff,
   VIE_MAX_JOUEUR: 100,
   CLE_SPRITE_JOUEUR: "gwendo",
@@ -24,14 +24,20 @@ export const CONFIG_JEU = {
 
   // Inventaire
   NOMBRE_SLOTS: 8,
-  TOUCHE_INVENTAIRE: "I",
-
+  
   // DOM
   ID_JEU: "game",
   ID_HUD: "hud",
   ID_INVENTAIRE: "inventaire",
   CLASSE_ACTIF: "actif",
   COULEUR_FOND: "#252529",
+  
+  // Touches
+  TOUCHE_RAMASSER: "F",
+  TOUCHE_INVENTAIRE: "I",
+
+  // Interactions
+  DISTANCE_RAMASSAGE: 60,   // px
 
   // Son
   VOLUME_THEME: 0.2,

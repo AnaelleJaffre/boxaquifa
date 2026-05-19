@@ -8,8 +8,9 @@ export default class Carte {
     this.calques = {};
     this.objets = {};
     this.objetsDepth = [];
-    this.zonesVegetation = []; // Herbes + fleurs
+    this.zonesVegetation = [];
     this.corpsStatiques = [];
+    this.objetsRamassables = [];
   }
 
   creer() {
@@ -25,8 +26,9 @@ export default class Carte {
 
     this._chargerBatiments();
     this._chargerVegetation(ASSETS.CALQUES.HERBES);
-    this._chargerVegetation(ASSETS.CALQUES.FLEURS);
-    this._chargerCoquillages();
+    // this._chargerVegetation(ASSETS.CALQUES.FLEURS);
+    this._chargerObjetsRamassables(ASSETS.CALQUES.COQUILLAGES);
+    this._chargerObjetsRamassables(ASSETS.CALQUES.FLEURS);
     this._chargerFonctionnels();
     this._creerCollisions();
     this._initialiserVent();
@@ -138,14 +140,65 @@ export default class Carte {
     });
   }
 
-  _chargerCoquillages() {
-    const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.COQUILLAGES);
+  _chargerObjetsRamassables(nomCalque) {
+    const couche = this.tilemap.getObjectLayer(nomCalque);
     if (!couche) return;
 
     couche.objects.forEach((objet) => {
-      const sprite = this._creerSpriteObjet(objet, CONFIG_JEU.DEPTH_SOL_OBJETS);
-      if (sprite) this.objetsDepth.push(sprite);
+      const cle = this._gidVersCle(objet.gid);
+      if (!cle) return;
+
+      const definition = ASSETS.OBJETS_RAMASSABLES[cle];
+      const sprite = definition
+        ? this._creerSpriteObjet(objet, 1.5)  // sol si ramassable
+        : this._creerSpriteObjet(objet, objet.y);
+
+      if (!sprite) return;
+
+      if (definition) {
+        // Stocke les métadonnées pour le ramassage
+        sprite.ramassable = true;
+        sprite.cle        = cle;
+        sprite.cleStack   = definition.cleStack;
+        sprite.nom        = definition.nom;
+        sprite.icone      = definition.icone;
+        sprite.quantiteRamassee = definition.quantiteRamassee;
+        this.objetsRamassables.push(sprite);
+      }
+
+      this.objetsDepth.push(sprite);
     });
+  }
+
+  obtenirObjetProche(spriteJoueur) {
+    const piedX = spriteJoueur.x;
+    const piedY = spriteJoueur.y + spriteJoueur.displayHeight / 2;
+    const dist  = CONFIG_JEU.DISTANCE_RAMASSAGE;
+
+    let plusProche = null;
+    let distMin    = Infinity;
+
+    this.objetsRamassables.forEach((sprite) => {
+      const dx = piedX - sprite.x;
+      const dy = piedY - sprite.y;
+      const d  = Math.sqrt(dx * dx + dy * dy);
+      if (d < dist && d < distMin) {
+        distMin    = d;
+        plusProche = sprite;
+      }
+    });
+
+    return plusProche;
+  }
+
+  retirerObjet(sprite) {
+    const index = this.objetsRamassables.indexOf(sprite);
+    if (index !== -1) this.objetsRamassables.splice(index, 1);
+
+    const indexDepth = this.objetsDepth.indexOf(sprite);
+    if (indexDepth !== -1) this.objetsDepth.splice(indexDepth, 1);
+
+    sprite.destroy();
   }
 
   _chargerFonctionnels() {
@@ -279,8 +332,6 @@ export default class Carte {
       (maintenant - this.vent.timestampDebut) / this.vent.duree,
       1
     );
-    console.log("vent progression:", progression.toFixed(2), "cible:", this.vent.rotationCible.toFixed(3));
-
 
     // Interpolation sinusoïdale pour un mouvement doux
     const t = Math.sin(progression * Math.PI / 2);

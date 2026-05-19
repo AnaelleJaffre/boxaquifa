@@ -2,6 +2,7 @@ import { CONFIG_JEU } from "../config/Constantes.js";
 
 export default class Interface {
   constructor() {
+    this.indicateurRamassage = null;
     this._construireHud();
     this._construireInventaire();
   }
@@ -9,12 +10,16 @@ export default class Interface {
   _construireHud() {
     this.hud = document.getElementById(CONFIG_JEU.ID_HUD);
     this.elementVie = document.getElementById("hud-vie");
+
+    // Indicateur de ramassage
+    this.indicateurRamassage = document.createElement("div");
+    this.indicateurRamassage.id = "indicateur-ramassage";
+    this.indicateurRamassage.style.display = "none";
+    document.body.appendChild(this.indicateurRamassage);
   }
 
   _construireInventaire() {
     const conteneur = document.getElementById(CONFIG_JEU.ID_INVENTAIRE);
-
-    // Génération dynamique des slots
     const grille = conteneur.querySelector(".grille");
     grille.innerHTML = "";
 
@@ -44,7 +49,35 @@ export default class Interface {
   mettreAJourSlots(slots) {
     const elements = this.conteneurInventaire.querySelectorAll(".slot");
     slots.forEach((objet, i) => {
-      elements[i].textContent = objet ? objet.nom : "";
+      const el = elements[i];
+      el.innerHTML = "";
+
+      if (objet) {
+        const icone = document.createElement("img");
+        icone.src = objet.icone;
+        icone.classList.add("slot-icone");
+
+        const nom = document.createElement("span");
+        nom.classList.add("slot-nom");
+        nom.textContent = objet.nom;
+
+        const quantite = document.createElement("span");
+        quantite.classList.add("slot-quantite");
+        quantite.textContent = `×${objet.quantite}`;
+
+        el.appendChild(icone);
+        el.appendChild(nom);
+        el.appendChild(quantite);
+      }
     });
+  }
+
+  afficherIndicateurRamassage(objet) {
+    this.indicateurRamassage.style.display = objet ? "block" : "none";
+
+    if (objet) {
+      this.indicateurRamassage.textContent =
+        `F — Ramasser ${objet.nom}`;
+    }
   }
 }

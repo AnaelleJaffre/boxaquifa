@@ -12,12 +12,30 @@ export default class Inventaire {
   }
 
   ajouterObjet(objet) {
-    const indexLibre = this.slots.findIndex((s) => s === null);
-    if (indexLibre !== -1) {
-      this.slots[indexLibre] = objet;
-      return true;
+
+    console.log("ADD OBJ:", objet.cle, objet.nom)
+
+    const index = this.slots.findIndex(
+      s => s && s.cle === objet.cle
+    )
+
+    if (index !== -1) {
+      this.slots[index].quantite += objet.quantite || 1
+      return true
     }
-    return false; // Inventaire plein
+
+    const libre = this.slots.findIndex(s => s === null)
+
+    if (libre === -1) return false
+
+    this.slots[libre] = {
+      cle: objet.cle,
+      nom: objet.nom,
+      icone: objet.icone,
+      quantite: objet.quantite || 1
+    }
+
+    return true
   }
 
   obtenirSlots() {
