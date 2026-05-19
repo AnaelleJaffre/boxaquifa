@@ -13,8 +13,6 @@ export default class Inventaire {
 
   ajouterObjet(objet) {
 
-    console.log("ADD OBJ:", objet.cle, objet.nom)
-
     const index = this.slots.findIndex(
       s => s && s.cle === objet.cle
     )

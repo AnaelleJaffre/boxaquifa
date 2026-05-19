@@ -63,7 +63,7 @@ export default class Interface {
 
         const quantite = document.createElement("span");
         quantite.classList.add("slot-quantite");
-        quantite.textContent = `×${objet.quantite}`;
+        quantite.textContent = `${objet.quantite}`;
 
         el.appendChild(icone);
         el.appendChild(nom);
