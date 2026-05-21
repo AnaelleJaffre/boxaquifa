@@ -4,16 +4,24 @@ export default class Tactile {
   constructor(scene) {
     this.scene = scene;
     this.actif = false;
+    this.ramasserDemande = false;
 
-    this.depart = null;       // Position du doigt au toucher initial
-    this.direction = {        // Direction normalisée courante
-      x: 0,
-      y: 0,
-    };
+    this.depart = null; // Position du doigt au toucher initial
+    this.direction = { x: 0, y: 0 }; // Direction normalisée courante
   }
 
   creer() {
     const input = this.scene.input;
+
+    // Ramassage
+    const indicateur = document.getElementById("indicateur-ramassage");
+    if (indicateur) {
+      indicateur.addEventListener("pointerdown", (e) => {
+        console.log("Objet récupéré !")
+        e.stopPropagation();
+        this.ramasserDemande = true;
+      });
+    }
 
     input.on("pointerdown", (pointeur) => {
       if (this._surInterface(pointeur)) return;
@@ -41,6 +49,7 @@ export default class Tactile {
 
       // Met à jour la position de référence pour le prochain delta
       this.positionPrecedente = { x: pointeur.x, y: pointeur.y };
+
     });
 
     input.on("pointerup", () => {
@@ -48,6 +57,12 @@ export default class Tactile {
       this.positionPrecedente = null;
       this.direction = { x: 0, y: 0 };
     });
+  }
+
+  consommerRamassage() {
+    const val = this.ramasserDemande;
+    this.ramasserDemande = false;
+    return val;
   }
 
   obtenirDirection() {

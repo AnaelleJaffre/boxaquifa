@@ -46,6 +46,7 @@ export default class SceneJeu extends Phaser.Scene {
     this.carte = new Carte(this);
     this.carte.creer();
     this.children.depthSort();
+    this.interface  = new Interface();
     this.tactile = new Tactile(this);
     this.tactile.creer();
     this.objetProche = null;
@@ -57,7 +58,6 @@ export default class SceneJeu extends Phaser.Scene {
     this.carte.activerCollisionJoueur(this.joueur.sprite);
 
     this.inventaire = new Inventaire();
-    this.interface  = new Interface();
     this.interface.mettreAJourVie(this.joueur.obtenirVie());
 
     // Son du jeu
@@ -103,7 +103,7 @@ export default class SceneJeu extends Phaser.Scene {
     this.interface.afficherIndicateurRamassage(this.objetProche, this.cameras.main)
 
     // Pickup
-    if (Phaser.Input.Keyboard.JustDown(this.toucheRamasser) && objet) {
+    if ((Phaser.Input.Keyboard.JustDown(this.toucheRamasser) || this.tactile.consommerRamassage()) && objet) {
 
       if (this.inventaire.ajouterObjet({
         cle: this.objetProche.cleStack,

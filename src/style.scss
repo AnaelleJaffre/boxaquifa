@@ -57,6 +57,7 @@ body {
 
 canvas {
   display: block;
+  pointer-events: none;
 }
 
 ::selection {
@@ -125,7 +126,6 @@ canvas {
 #indicateur-ramassage {
   position: fixed;
   transform: translate(-50%, -100%);
-  pointer-events: none;
   display: none;
   background: var(--couleur-hud);
   border: 1px solid var(--couleur-hud-bordure);
@@ -133,6 +133,8 @@ canvas {
   padding: 6px 14px;
   font-family: var(--police-mono);
   font-size: var(--taille-texte-hud);
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 // Slot avec icône
