@@ -25,10 +25,14 @@ export default class Carte {
     this.calques.fond = this.tilemap.createLayer(ASSETS.CALQUES.FOND, tilesets).setDepth(0);
     this.calques.sol  = this.tilemap.createLayer(ASSETS.CALQUES.SOL,  tilesets).setDepth(1);
 
-    this._chargerBatiments();
-    this._chargerCalque(ASSETS.CALQUES.HERBES);
-    this._chargerCalque(ASSETS.CALQUES.FLEURS);
-    this._chargerCalque(ASSETS.CALQUES.COQUILLAGES);
+    const calquesObjets = [
+      ASSETS.CALQUES.BATIMENTS,
+      ASSETS.CALQUES.HERBES,
+      ASSETS.CALQUES.FLEURS,
+      ASSETS.CALQUES.COQUILLAGES,
+    ];
+    calquesObjets.forEach(nom => this._chargerCalque(nom));
+
     this._chargerFonctionnels();
     this._creerCollisions();
     this._initialiserVent();
@@ -106,16 +110,6 @@ export default class Carte {
   }
 
   // ─── Chargement des calques ─────────────────────────────────────────────────
-
-  _chargerBatiments() {
-    const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.BATIMENTS);
-    if (!couche) return;
-
-    couche.objects.forEach((objet) => {
-      const sprite = this._creerSpriteObjet(objet, objet.y);
-      if (sprite) this.objetsDepth.push(sprite);
-    });
-  }
 
   _chargerCalque(nomCalque) {
     const couche = this.tilemap.getObjectLayer(nomCalque);

@@ -27,8 +27,7 @@ export const DEFINITIONS = {
   "drapeaux_lanterne":{ tags: [] },
   "lampadaire_1":     { tags: [] },
   
-  
-  // ─── Urilisables ──────────────────────────────────────────────────────────────
+  // ─── Utilisables ──────────────────────────────────────────────────────────────
   "maison":           { tags: [] },
   "poubelle":         { tags: [] },
 };
