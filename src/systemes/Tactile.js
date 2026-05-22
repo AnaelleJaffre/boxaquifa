@@ -13,16 +13,6 @@ export default class Tactile {
   creer() {
     const input = this.scene.input;
 
-    // Ramassage
-    const indicateur = document.getElementById("indicateur-ramassage");
-    if (indicateur) {
-      indicateur.addEventListener("pointerdown", (e) => {
-        console.log("Objet récupéré !")
-        e.stopPropagation();
-        this.ramasserDemande = true;
-      });
-    }
-
     input.on("pointerdown", (pointeur) => {
       if (this._surInterface(pointeur)) return;
       this.actif = true;
@@ -56,6 +46,14 @@ export default class Tactile {
       this.actif = false;
       this.positionPrecedente = null;
       this.direction = { x: 0, y: 0 };
+    });
+  }
+
+  creerListenerRamassage(element) {
+    if (!element) return;
+    element.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      this.ramasserDemande = true;
     });
   }
 

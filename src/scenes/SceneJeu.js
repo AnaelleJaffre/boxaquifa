@@ -46,9 +46,12 @@ export default class SceneJeu extends Phaser.Scene {
     this.carte = new Carte(this);
     this.carte.creer();
     this.children.depthSort();
-    this.interface  = new Interface();
+
     this.tactile = new Tactile(this);
     this.tactile.creer();
+
+    this.interface  = new Interface();
+    this.tactile.creerListenerRamassage(this.interface.indicateurRamassage);
     this.objetProche = null;
 
     const depart = this.carte.obtenirPointDepart();
