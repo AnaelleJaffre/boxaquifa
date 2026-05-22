@@ -7,7 +7,7 @@ export const ASSETS = {
     { CLE: "fond",         CHEMIN: "assets/tilesets/moridona/fond.png" },
     { CLE: "sol_moridano", CHEMIN: "assets/tilesets/moridona/maison_mira.png" },
   ],
-  OBJETS_TILESET: "moridano", // Tileset à images individuelles
+  OBJETS_TILESET: "moridano",
   CALQUES: {
     FOND:         "Fond",
     SOL:          "Sol",
@@ -34,27 +34,13 @@ export const ASSETS = {
     "herbe_5", "herbe_6", "herbe_7",
     "lampadaire_1", "maison", "poubelle",
   ],
-  OBJETS_RAMASSABLES: {
-
-    "coquil_1": { cleStack: "coquillage_nacre",   nom: "Coquillage nacré",   icone: "assets/tilesets/moridona/objets/coquil_1.png", quantiteRamassee: 1 },
-    "coquil_2": { cleStack: "coquillage_spiral",  nom: "Coquillage spiralé", icone: "assets/tilesets/moridona/objets/coquil_2.png", quantiteRamassee: 1 },
-    "coquil_3": { cleStack: "coquillage_plat",    nom: "Coquillage plat",    icone: "assets/tilesets/moridona/objets/coquil_3.png", quantiteRamassee: 1 },
-    "coquil_4": { cleStack: "coquillage_petit",   nom: "Petit coquillage",   icone: "assets/tilesets/moridona/objets/coquil_4.png", quantiteRamassee: 1 },
-    "coquil_5": { cleStack: "coquillage_casse",   nom: "Coquillage cassé",    icone: "assets/tilesets/moridona/objets/coquil_5.png", quantiteRamassee: 1 },
-    "coquil_6": { cleStack: "coquillage_plat  ",  nom: "Coquillage plat",    icone: "assets/tilesets/moridona/objets/coquil_6.png", quantiteRamassee: 1 },
-    "coquil_7": { cleStack: "coquillage_moche",   nom: "Coquillage moche",   icone: "assets/tilesets/moridona/objets/coquil_7.png", quantiteRamassee: 1 },
-
-    "fleur_1":  { cleStack: "fleur_dunes",        nom: "Fleur des dunes",    icone: "assets/tilesets/moridona/objets/fleur_1.png", quantiteRamassee: 1 },
-    "fleur_2":  { cleStack: "fleur_dunes",        nom: "Fleur des dunes",    icone: "assets/tilesets/moridona/objets/fleur_1.png", quantiteRamassee: 2 }
-
-  },
   PERSONNAGES: {
     MIRA: { CLE: "mira", CHEMIN: "assets/personnages/mira_spritesheet.png" },
   },
   SONS: {
-    DEPLACEMENT: { CLE: "pas",   CHEMIN: "assets/sons/actions/marcher_1.mp3" },
-    DEPLACEMENT_HERBE: { CLE: "pas_herbes",   CHEMIN: "assets/sons/actions/marcher_herbes_court.mp3" },
-    THEME_MORIDONA: { CLE: "theme_moridona", CHEMIN: "assets/sons/themes/moridona-theme.mp3" },
+    DEPLACEMENT:       { CLE: "pas",            CHEMIN: "assets/sons/actions/marcher_1.mp3" },
+    DEPLACEMENT_HERBE: { CLE: "pas_herbes",      CHEMIN: "assets/sons/actions/marcher_herbes_court.mp3" },
+    THEME_MORIDONA:    { CLE: "theme_moridona",  CHEMIN: "assets/sons/themes/moridona-theme.mp3" },
   },
   FIRSTGID_MORIDANO_FALLBACK: 2369,
 };

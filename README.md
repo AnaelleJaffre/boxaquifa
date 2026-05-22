@@ -5,6 +5,5 @@ Le nom, c'est juste mon copain qui a dit un mot au hasard, donc c'est normal s'i
 
 ## Note à moi-même (pour continuer le dev)
 1. Faire en sorte que les fleurs fassent partie de la végétation, mais sans apparaitre deux fois (puisqu'elles sont ramassables)
-2. Sur tel : appuyer sur l'indicateurRamassage pour prendre l'objet
-3. Trouver un moyen d'afficher l'inventaire sur tel (temporaire)
-2. Rajouter des brouillards :D
+2. Trouver un moyen d'afficher l'inventaire sur tel (temporaire)
+3. Rajouter des brouillards :D

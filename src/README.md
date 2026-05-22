@@ -54,3 +54,22 @@
 1. Remplacer les "\\/" par "/"
 2. Remplacer les ".." par "assets" (chemin relatif, dans le dossier *public*)
 3. Éventuellement remplacer la taille des objets mal dimensionnés (1088 -> 1080)
+
+## Ce qu'il se passe dans le code
+
+### Fichiers de configuration
+
+#### `Assets.js`
+Référentiel technique des ressources Phaser : chemins de fichiers, clés de
+chargement, ordre des GID du tileset (OBJETS_MORIDANO — ne pas réordonner),
+noms des calques Tiled. Ne contient aucune logique de jeu.
+
+#### `Definitions.js`
+Source de vérité sur les comportements des objets du monde.
+Chaque clé correspond à un nom d'objet issu de OBJETS_MORIDANO.
+Les tags disponibles sont : `vegetation`, `ramassable` (à compléter au fil du dev).
+Un objet non déclaré ici est chargé visuellement mais sans aucun comportement.
+
+#### `Constantes.js`
+Paramètres numériques et de configuration du jeu : vitesses, volumes, distances,
+dimensions des hitbox, identifiants DOM. À modifier pour tuner le gameplay.

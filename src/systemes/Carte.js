@@ -1,5 +1,6 @@
 import { ASSETS } from "../config/Assets.js";
 import { CONFIG_JEU } from "../config/Constantes.js";
+import { DEFINITIONS } from "../config/Definitions.js";
 import * as Phaser from "phaser";
 
 export default class Carte {
@@ -25,10 +26,9 @@ export default class Carte {
     this.calques.sol  = this.tilemap.createLayer(ASSETS.CALQUES.SOL,  tilesets).setDepth(1);
 
     this._chargerBatiments();
-    this._chargerVegetation(ASSETS.CALQUES.HERBES);
-    // this._chargerVegetation(ASSETS.CALQUES.FLEURS);
-    this._chargerObjetsRamassables(ASSETS.CALQUES.COQUILLAGES);
-    this._chargerObjetsRamassables(ASSETS.CALQUES.FLEURS);
+    this._chargerCalque(ASSETS.CALQUES.HERBES);
+    this._chargerCalque(ASSETS.CALQUES.FLEURS);
+    this._chargerCalque(ASSETS.CALQUES.COQUILLAGES);
     this._chargerFonctionnels();
     this._creerCollisions();
     this._initialiserVent();
@@ -117,30 +117,7 @@ export default class Carte {
     });
   }
 
-  _chargerVegetation(nomCalque) {
-    const couche = this.tilemap.getObjectLayer(nomCalque);
-    if (!couche) return;
-
-    couche.objects.forEach((objet) => {
-      const img = this._creerSpriteVegetation(objet);
-      if (!img) return;
-
-      // Zone de detection à la base
-      const zone = this.scene.add.rectangle(
-        objet.x + objet.width / 2,
-        objet.y - CONFIG_JEU.MIRA_HITBOX_HAUTEUR / 2,
-        objet.width,
-        CONFIG_JEU.MIRA_HITBOX_HAUTEUR
-      );
-      this.scene.physics.add.existing(zone, true);
-      zone.sprite = img;
-
-      this.zonesVegetation.push(zone);
-      this.objetsDepth.push(img);
-    });
-  }
-
-  _chargerObjetsRamassables(nomCalque) {
+  _chargerCalque(nomCalque) {
     const couche = this.tilemap.getObjectLayer(nomCalque);
     if (!couche) return;
 
@@ -148,26 +125,45 @@ export default class Carte {
       const cle = this._gidVersCle(objet.gid);
       if (!cle) return;
 
-      const definition = ASSETS.OBJETS_RAMASSABLES[cle];
-      const sprite = definition
-        ? this._creerSpriteObjet(objet, 1.5)  // sol si ramassable
-        : this._creerSpriteObjet(objet, objet.y);
+      const def = DEFINITIONS[cle];
+      if (!def) return; // objet non déclaré = ignoré
 
-      if (!sprite) return;
+      const tags = def.tags ?? [];
+      const estVegetation = tags.includes("vegetation");
 
-      if (definition) {
-        // Stocke les métadonnées pour le ramassage
-        sprite.ramassable = true;
-        sprite.cle        = cle;
-        sprite.cleStack   = definition.cleStack;
-        sprite.nom        = definition.nom;
-        sprite.icone      = definition.icone;
-        sprite.quantiteRamassee = definition.quantiteRamassee;
-        this.objetsRamassables.push(sprite);
-      }
+      // Le sprite est créé selon son comportement visuel principal
+      const img = estVegetation
+        ? this._creerSpriteVegetation(objet)
+        : this._creerSpriteObjet(objet, 1.5);
 
-      this.objetsDepth.push(sprite);
+      if (!img) return;
+
+      if (estVegetation)            this._appliquerVegetation(img, objet);
+      if (tags.includes("ramassable")) this._appliquerRamassable(img, def);
+
+      this.objetsDepth.push(img);
     });
+  }
+
+  _appliquerVegetation(img, objet) {
+    const zone = this.scene.add.rectangle(
+      objet.x + objet.width / 2,
+      objet.y - CONFIG_JEU.MIRA_HITBOX_HAUTEUR / 2,
+      objet.width,
+      CONFIG_JEU.MIRA_HITBOX_HAUTEUR
+    );
+    this.scene.physics.add.existing(zone, true);
+    zone.sprite = img;
+    this.zonesVegetation.push(zone);
+  }
+
+  _appliquerRamassable(img, def) {
+    img.ramassable       = true;
+    img.cleStack         = def.cleStack;
+    img.nom              = def.nom;
+    img.icone            = def.icone;
+    img.quantiteRamassee = def.quantiteRamassee;
+    this.objetsRamassables.push(img);
   }
 
   obtenirObjetProche(spriteJoueur) {
@@ -194,6 +190,12 @@ export default class Carte {
   retirerObjet(sprite) {
     const index = this.objetsRamassables.indexOf(sprite);
     if (index !== -1) this.objetsRamassables.splice(index, 1);
+
+    const indexZone = this.zonesVegetation.findIndex(z => z.sprite === sprite);
+    if (indexZone !== -1) {
+      this.zonesVegetation[indexZone].destroy();
+      this.zonesVegetation.splice(indexZone, 1);
+    }
 
     const indexDepth = this.objetsDepth.indexOf(sprite);
     if (indexDepth !== -1) this.objetsDepth.splice(indexDepth, 1);
