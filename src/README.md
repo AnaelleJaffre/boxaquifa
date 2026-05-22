@@ -1,5 +1,25 @@
 # Trucs de devs
 
+## Mise en place
+
+1. Clonner ce repo
+
+2. Sur Windows : installer Node JS LTS
+3. Vérifier la version de `node` et de `npm`. Sur Windows, autoriser l'exécutions de scripts :
+    ```
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    ```
+
+4. Lancer l'installation de `npm`
+    ```
+    npm install
+    ```
+   
+5. C'est bon pour la config !
+
+
+## Lancement
+
 - Pour lancer npm avec vite
     ```
     npm run dev
