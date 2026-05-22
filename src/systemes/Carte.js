@@ -124,11 +124,12 @@ export default class Carte {
 
       const tags = def.tags ?? [];
       const estVegetation = tags.includes("vegetation");
+      const estBatiment   = tags.includes("batiment");
 
       // Le sprite est créé selon son comportement visuel principal
       const img = estVegetation
         ? this._creerSpriteVegetation(objet)
-        : this._creerSpriteObjet(objet, 1.5);
+        : this._creerSpriteObjet(objet, estBatiment ? objet.y : 1.5);
 
       if (!img) return;
 

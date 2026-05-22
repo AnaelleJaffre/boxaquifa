@@ -23,11 +23,11 @@ export const DEFINITIONS = {
   "herbe_7": { tags: ["vegetation"] },
 
   // ─── Decoratifs ──────────────────────────────────────────────────────────────
-  "drapeaux_1":       { tags: [] },
-  "drapeaux_lanterne":{ tags: [] },
-  "lampadaire_1":     { tags: [] },
+  "drapeaux_1":        { tags: ["batiment"] },
+  "drapeaux_lanterne": { tags: ["batiment"] },
+  "lampadaire_1":      { tags: ["batiment"] },
   
   // ─── Utilisables ──────────────────────────────────────────────────────────────
-  "maison":           { tags: [] },
-  "poubelle":         { tags: [] },
+  "maison":   { tags: ["batiment"] },
+  "poubelle": { tags: ["batiment"] },
 };

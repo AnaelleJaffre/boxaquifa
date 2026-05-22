@@ -6,12 +6,13 @@
   --couleur-fond:             #4a4a50;
   --couleur-texte:            #ffffff;
   --couleur-surlignage:       rgba(179, 221, 216, 0.32);
-
-  --couleur-hud:              rgba(255, 255, 255, 0.08);
+  
+  --couleur-hud:              rgba(255, 255, 255, 0.15);
   --couleur-hud-bordure:      rgba(255, 255, 255, 0.12);
-
-  --couleur-inventaire:       rgba(79, 79, 79, 0.55);
-  --couleur-slot:             rgba(255, 255, 255, 0.08);
+  
+  --couleur-inventaire:       rgba(238, 238, 238, 0.15);
+  --couleur-texte-inventaire: #4a4a50;
+  --couleur-slot:             rgba(5, 4, 4, 0.08);
   --couleur-slot-survol:      rgba(255, 255, 255, 0.15);
 
   // Typographie
@@ -75,6 +76,7 @@ canvas {
   gap: var(--hud-gap);
   padding: var(--hud-padding);
   background: var(--couleur-hud);
+  backdrop-filter: blur(4px);
   border: 1px solid var(--couleur-hud-bordure);
   border-radius: var(--rayon-normal);
   font-size: var(--taille-texte-hud);
@@ -93,9 +95,11 @@ canvas {
   width: fit-content;
   max-width: 95vw; // Limite sur mobile
   background: var(--couleur-inventaire);
+  color: var(--couleur-texte-inventaire);
+  border: 1px solid var(--couleur-hud-bordure);
   padding: var(--inventaire-padding);
   border-radius: var(--rayon-normal);
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(6px) brightness(101%);
   flex-direction: column;
 
   &.actif {
@@ -129,6 +133,7 @@ canvas {
   transform: translate(-50%, -100%);
   display: none;
   background: var(--couleur-hud);
+  backdrop-filter: blur(4px);
   border: 1px solid var(--couleur-hud-bordure);
   border-radius: var(--rayon-normal);
   padding: 6px 14px;
