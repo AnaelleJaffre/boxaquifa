@@ -62,14 +62,18 @@ export default class Interactions {
       const dy = piedY - objet.sprite.y;
       const d  = Math.sqrt(dx * dx + dy * dy);
 
-      if (d < dist && d < distMin) {
-        // Prend le premier tag interactif trouve
-        const tag = objet.tags.find((t) => INTERACTIONS[t]);
-        if (tag) {
-          distMin    = d;
-          plusProche = objet;
-          tagRetenu  = tag;
-        }
+      const tag = objet.tags.find((t) => INTERACTIONS[t]);
+      if (!tag) return;
+
+      const estPassif = INTERACTIONS[tag].passif;
+      const distMax   = estPassif
+        ? CONFIG_JEU.DISTANCE_INTERACTION_PASSIVE
+        : CONFIG_JEU.DISTANCE_INTERACTION;
+
+      if (d < distMax && d < distMin) {
+        distMin    = d;
+        plusProche = objet;
+        tagRetenu  = tag;
       }
     });
 

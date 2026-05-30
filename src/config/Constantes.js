@@ -38,7 +38,8 @@ export const CONFIG_JEU = {
 
   // Interactions
   DISTANCE_INTERACTION: 60,   // px
-
+  DISTANCE_INTERACTION_PASSIVE: 300,   // px
+  
   // Son
   VOLUME_THEME: 0.2,
   VOLUME_PAS:   0.3,
