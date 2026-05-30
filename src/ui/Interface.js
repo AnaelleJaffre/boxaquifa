@@ -90,7 +90,7 @@ export default class Interface {
       this.indicateurInteraction .dataset.tutoOuvert = "false";
       return;
     }
-
+    
     const estTactile = !window.matchMedia("(hover: hover)").matches;
     const raccourci  = (!estTactile && !config.passif) ? " (F)" : "";
     const texte      = `${config.verbe}${raccourci}`;

@@ -197,8 +197,35 @@ export default class Carte {
     const couche = this.tilemap.getObjectLayer(ASSETS.CALQUES.FONCTIONNELS);
     if (!couche) return;
 
+    const tagsInteractifs = ["ramassable", "jeter", "entrer", "parler"];
+
     couche.objects.forEach((objet) => {
-      if (objet.name) this.objets[objet.name] = objet;
+      if (!objet.name) return;
+
+      // Toujours stocker la référence positionnelle
+      this.objets[objet.name] = objet;
+
+      // Si une définition interactife existe, créer une zone et l'enregistrer
+      if (!this.interactions) return;
+      const def = DEFINITIONS[objet.name];
+      if (!def?.tags?.some(t => tagsInteractifs.includes(t))) return;
+
+      const zone = this.scene.add.rectangle(
+        objet.x + objet.width  / 2,
+        objet.y + objet.height,
+        objet.width,
+        objet.height
+      );
+      zone.setVisible(false);
+      this.scene.physics.add.existing(zone, true);
+
+      this.interactions.enregistrer({
+        sprite:    zone,
+        tags:      def.tags,
+        nom:       def.nom ?? objet.name,
+        icone:     def.icone ?? null,
+        callbacks: {},
+      });
     });
   }
 

@@ -114,6 +114,14 @@ export default class SceneJeu extends Phaser.Scene {
           }
         };
       });
+    
+    this.interactions.objetsInteractifs
+      .filter(o => o.tags.includes("entrer"))
+      .forEach(o => {
+        o.callbacks.entrer = (objet) => {
+          console.log(`Entrer dans : ${objet.nom}`);
+        };
+      });
   }
 
   update() {

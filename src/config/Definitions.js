@@ -30,4 +30,8 @@ export const DEFINITIONS = {
   // ─── Utilisables ──────────────────────────────────────────────────────────────
   "maison":   { tags: ["batiment"] },
   "poubelle": { tags: ["batiment", "jeter"] },
+  
+  // ─── Fonctionnels ─────────────────────────────────────────────────────────────
+  "Porte_Maison_Mira": { tags: ["entrer"], nom: "Maison de Mira" },
+
 };
