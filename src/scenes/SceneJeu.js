@@ -63,6 +63,11 @@ export default class SceneJeu extends Phaser.Scene {
     this.inventaire = new Inventaire();
     this.interface.mettreAJourVie(this.joueur.obtenirVie());
 
+    this.interface.surClicInventaire(() => {
+      const ouvert = this.inventaire.basculer();
+      this.interface.afficherInventaire(ouvert);
+    });
+
     // Son du jeu
     this.son = new Son(this);
     this.son.creer();
@@ -86,7 +91,6 @@ export default class SceneJeu extends Phaser.Scene {
       this.cameras.main.setSize(gameSize.width, gameSize.height);
     });
   }
-
 
   update() {
 

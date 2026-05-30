@@ -9,7 +9,12 @@ export default class Interface {
 
   _construireHud() {
     this.hud = document.getElementById(CONFIG_JEU.ID_HUD);
-    this.elementVie = document.getElementById("hud-vie");
+
+    // Bouton inventaire mobile
+    this.boutonInventaire = document.createElement("button");
+    this.boutonInventaire.id = "bouton-inventaire";
+    this.boutonInventaire.textContent = "I";
+    document.body.appendChild(this.boutonInventaire);
 
     // Indicateur de ramassage
     this.indicateurRamassage = document.createElement("div");
@@ -37,6 +42,13 @@ export default class Interface {
     if (this.elementVie) {
       this.elementVie.textContent = `❤️ ${vie}`;
     }
+  }
+
+  surClicInventaire(callback) {
+    this.boutonInventaire.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      callback();
+    });
   }
 
   afficherInventaire(estOuvert) {

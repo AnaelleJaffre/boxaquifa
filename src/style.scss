@@ -27,7 +27,6 @@
   --rayon-slot:               8px;
   --hud-padding:              8px 12px;
   --hud-gap:                  12px;
-  --inventaire-gap:           8px;
   --inventaire-padding:       14px;
 
   // Breakpoints (usage JS possible via getComputedStyle)
@@ -66,25 +65,6 @@ canvas {
   background-color: var(--couleur-surlignage);
 }
 
-// ─── HUD ──────────────────────────────────────────────────────────────────────
-#hud {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  display: flex;
-  align-items: center;
-  gap: var(--hud-gap);
-  padding: var(--hud-padding);
-  background: var(--couleur-hud);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--couleur-hud-bordure);
-  border-radius: var(--rayon-normal);
-  font-size: var(--taille-texte-hud);
-  font-family: var(--police-mono);
-  opacity: 0.9;
-  pointer-events: none; // Le HUD ne capte pas les clics
-}
-
 // ─── Inventaire ───────────────────────────────────────────────────────────────
 #inventaire {
   display: none;
@@ -117,38 +97,25 @@ canvas {
 .grille {
   display: flex;
   flex-direction: row;
-  gap: var(--inventaire-gap);
-  overflow-x: auto;      // Scroll horizontal sur mobile
-  overflow-y: hidden;
-  padding-bottom: 4px;   // Évite que la scrollbar coupe les slots
+  // justify-content: center;
 
-  // Scrollbar discrète
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  width: 100%;
+  padding-bottom: 4px;
+
   scrollbar-width: thin;
   scrollbar-color: var(--couleur-slot-survol) transparent;
-}
-
-// Indicateur de ramassage
-#indicateur-ramassage {
-  position: fixed;
-  transform: translate(-50%, -100%);
-  display: none;
-  background: var(--couleur-hud);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--couleur-hud-bordure);
-  border-radius: var(--rayon-normal);
-  padding: 6px 14px;
-  font-family: var(--police-mono);
-  font-size: var(--taille-texte-hud);
-  pointer-events: auto;
-  cursor: pointer;
 }
 
 // Slot avec icône
 .slot {
   display: flex;
   flex-direction: column;
+  flex: 0 0 auto;
   align-items: center;
-  justify-content: center;
+  margin: 0 2%;
   gap: 2px;
 
   &:hover {
@@ -175,6 +142,44 @@ canvas {
     opacity: 0.9;
   }
 }
+
+#bouton-inventaire {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background: var(--couleur-hud);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--couleur-hud-bordure);
+  border-radius: var(--rayon-normal);
+  color: var(--couleur-texte);
+  font-family: var(--police-mono);
+  font-size: var(--taille-texte-hud);
+  padding: var(--hud-padding);
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0.9;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Indicateur de ramassage
+#indicateur-ramassage {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  display: none;
+  background: var(--couleur-hud);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--couleur-hud-bordure);
+  border-radius: var(--rayon-normal);
+  padding: 6px 14px;
+  font-family: var(--police-mono);
+  font-size: var(--taille-texte-hud);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
 
 // ─── Slots ────────────────────────────────────────────────────────────────────
 // .slot {
