@@ -169,17 +169,31 @@ canvas {
   position: fixed;
   transform: translate(-50%, -100%);
   display: none;
-  background: var(--couleur-hud);
-  backdrop-filter: blur(4px);
-  border: 1px solid var(--couleur-hud-bordure);
-  border-radius: var(--rayon-normal);
   padding: 6px 14px;
   font-family: var(--police-mono);
   font-size: var(--taille-texte-hud);
   pointer-events: auto;
   cursor: pointer;
-}
+  transition: background 0.2s, border 0.2s;
 
+  // Actif — bouton visible (ramasser, parler, entrer)
+  &[data-passif="false"] {
+    background: var(--couleur-hud);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--couleur-hud-bordure);
+    border-radius: var(--rayon-normal);
+  }
+
+  // Passif — texte simple (jeter)
+  &[data-passif="true"] {
+    background: none;
+    border: none;
+    border-radius: 0;
+    font-family: var(--police-principale);
+    color: var(--couleur-texte-inventaire);
+    backdrop-filter: none;
+  }
+}
 
 // ─── Slots ────────────────────────────────────────────────────────────────────
 // .slot {

@@ -2,7 +2,7 @@ import { CONFIG_JEU } from "../config/Constantes.js";
 
 export default class Interface {
   constructor() {
-    this.indicateurRamassage = null;
+    this.indicateurInteraction  = null;
     this._construireHud();
     this._construireInventaire();
   }
@@ -17,10 +17,10 @@ export default class Interface {
     document.body.appendChild(this.boutonInventaire);
 
     // Indicateur de ramassage
-    this.indicateurRamassage = document.createElement("div");
-    this.indicateurRamassage.id = "indicateur-ramassage";
-    this.indicateurRamassage.style.display = "none";
-    document.body.appendChild(this.indicateurRamassage);
+    this.indicateurInteraction  = document.createElement("div");
+    this.indicateurInteraction .id = "indicateur-ramassage";
+    this.indicateurInteraction .style.display = "none";
+    document.body.appendChild(this.indicateurInteraction );
   }
 
   _construireInventaire() {
@@ -84,29 +84,48 @@ export default class Interface {
     });
   }
 
-  afficherIndicateurRamassage(objet, camera) {
-
-    if (!objet) {
-      this.indicateurRamassage.style.display = "none";
-      return
+  afficherIndicateurInteraction(objet, config, spriteJoueur) {
+    if (!objet || !config) {
+      this.indicateurInteraction .style.display = "none";
+      this.indicateurInteraction .dataset.tutoOuvert = "false";
+      return;
     }
 
     const estTactile = !window.matchMedia("(hover: hover)").matches;
-    const texte = estTactile ? "Prendre" : "Prendre (F)";
-    
-    const pos = camera.worldView;
-    const x = Math.round(objet.x - pos.x);
-    const y = Math.round(objet.y - pos.y);
+    const raccourci  = (!estTactile && !config.passif) ? " (F)" : "";
+    const texte      = `${config.verbe}${raccourci}`;
 
-    this.indicateurRamassage.style.display = "block";
-    this.indicateurRamassage.textContent = texte;
+    const cam = this._derniereCamera;
+    if (cam) {
+      const pos = cam.worldView;
+      const x   = Math.round(objet.sprite.x - pos.x);
+      // Utilise getBounds() pour avoir le vrai haut du sprite
+      const bounds = objet.sprite.getBounds();
+      const y   = Math.round(bounds.top - pos.y);
+      this.indicateurInteraction .style.left = `${x}px`;
+      this.indicateurInteraction .style.top  = `${y}px`;
+    }
 
-    this.indicateurRamassage.style.left = `${x}px`;
-    this.indicateurRamassage.style.top = `${y}px`;
+    this.indicateurInteraction .style.display = "block";
+    this.indicateurInteraction .dataset.passif = config.passif ? "true" : "false";
 
-    const offsetY = 30;
-    this.indicateurRamassage.style.top = `${y - offsetY}px`;
+    const tutoOuvert = this.indicateurInteraction .dataset.tutoOuvert === "true";
+    if (config.passif && config.tuto) {
+      this.indicateurInteraction .textContent = tutoOuvert ? config.tuto : texte;
+      this.indicateurInteraction .onclick = () => {
+        const ouvert = this.indicateurInteraction .dataset.tutoOuvert === "true";
+        this.indicateurInteraction .dataset.tutoOuvert = ouvert ? "false" : "true";
+        this.indicateurInteraction .dataset.passif = ouvert ? "true" : "false";
+        this.afficherIndicateurInteraction(objet, config, null);
+      };
+    } else {
+      this.indicateurInteraction .textContent = texte;
+      this.indicateurInteraction .onclick = null;
+    }
+  }
 
+  enregistrerCamera(camera) {
+    this._derniereCamera = camera;
   }
 
 }

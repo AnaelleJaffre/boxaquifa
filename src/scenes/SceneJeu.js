@@ -7,6 +7,7 @@ import Interface from "../ui/Interface.js";
 import Carte from "../systemes/Carte.js";
 import Son from "../systemes/Son.js";
 import Tactile from "../systemes/Tactile.js";
+import Interactions from "../systemes/Interactions.js";
 
 export default class SceneJeu extends Phaser.Scene {
   constructor() {
@@ -44,15 +45,18 @@ export default class SceneJeu extends Phaser.Scene {
 
   create() {
     this.carte = new Carte(this);
-    this.carte.creer();
-    this.children.depthSort();
-
+    this.interface  = new Interface();
     this.tactile = new Tactile(this);
+    this.interactions = new Interactions(this, this.interface);
+
+    this.carte.creer(this.interactions);
+    this.children.depthSort();
+    this._brancher();
+    this.interface.enregistrerCamera(this.cameras.main);
+
     this.tactile.creer();
 
-    this.interface  = new Interface();
-    this.tactile.creerListenerRamassage(this.interface.indicateurRamassage);
-    this.objetProche = null;
+    this.tactile.creerListenerRamassage(this.interface.indicateurInteraction );
 
     const depart = this.carte.obtenirPointDepart();
     this.joueur = new Joueur(this, depart.x, depart.y);
@@ -92,6 +96,26 @@ export default class SceneJeu extends Phaser.Scene {
     });
   }
 
+  _brancher() {
+    // Ramassage
+    this.interactions.objetsInteractifs
+      .filter(o => o.tags.includes("ramassable"))
+      .forEach(o => {
+        o.callbacks.ramassable = (objet) => {
+          const ramasse = this.inventaire.ajouterObjet({
+            cle:              objet.nom,
+            nom:              objet.nom,
+            icone:            objet.icone,
+            quantiteRamassee: objet.quantiteRamassee,
+          });
+          if (ramasse) {
+            this.carte.retirerObjet(objet.sprite);
+            this.interface.mettreAJourSlots(this.inventaire.obtenirSlots());
+          }
+        };
+      });
+  }
+
   update() {
 
     // Joueur
@@ -99,35 +123,18 @@ export default class SceneJeu extends Phaser.Scene {
     this.son.mettreAJourPas(this.joueur.estEnMouvement())
     this.carte.mettreAJourDepth(this.joueur.sprite)
     this.carte.animerVegetation(this.joueur.sprite, this.son)
+    this.interactions.mettreAJour(this.joueur.sprite);
 
     // Inventaire toggle
     if (Phaser.Input.Keyboard.JustDown(this.toucheInventaire)) {
-      this.interface.afficherInventaire(this.inventaire.basculer())
+      const ouvert = this.inventaire.basculer();
+      this.interface.afficherInventaire(ouvert);
     }
 
-    // Interaction objet
-    const objet = this.objetProche = this.carte.obtenirObjetProche(this.joueur.sprite)
-    this.interface.afficherIndicateurRamassage(this.objetProche, this.cameras.main)
-
-    // Pickup
-    if ((Phaser.Input.Keyboard.JustDown(this.toucheRamasser) || this.tactile.consommerRamassage()) && objet) {
-
-      if (this.inventaire.ajouterObjet({
-        cle: this.objetProche.cleStack,
-        nom: this.objetProche.nom,
-        icone: this.objetProche.icone,
-        quantite: this.objetProche.quantiteRamassee
-      })) {
-
-        this.carte.retirerObjet(objet)
-
-        this.interface.mettreAJourSlots(
-          this.inventaire.obtenirSlots()
-        )
-
-        this.objetProche = null
-      }
+      // Touche F — actions actives uniquement
+    if (Phaser.Input.Keyboard.JustDown(this.toucheRamasser) ||
+        this.tactile.consommerRamassage()) {
+      this.interactions.declencherAction();
     }
   }
-
 }

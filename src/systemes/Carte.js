@@ -14,9 +14,10 @@ export default class Carte {
     this.objetsRamassables = [];
   }
 
-  creer() {
+  creer(interactions = null) {
     this.tilemap = this.scene.make.tilemap({ key: ASSETS.CARTE.CLE });
     this.firstGidMonridano = this._obtenirFirstGidMonridano();
+    this.interactions = interactions;
 
     const tilesets = ASSETS.TILESETS.map(({ CLE }) =>
       this.tilemap.addTilesetImage(CLE, CLE)
@@ -120,21 +121,34 @@ export default class Carte {
       if (!cle) return;
 
       const def = DEFINITIONS[cle];
-      if (!def) return; // objet non déclaré = ignoré
+      if (!def) return;
 
       const tags = def.tags ?? [];
       const estVegetation = tags.includes("vegetation");
       const estBatiment   = tags.includes("batiment");
 
-      // Le sprite est créé selon son comportement visuel principal
       const img = estVegetation
         ? this._creerSpriteVegetation(objet)
         : this._creerSpriteObjet(objet, estBatiment ? objet.y : 1.5);
 
       if (!img) return;
 
-      if (estVegetation)            this._appliquerVegetation(img, objet);
-      if (tags.includes("ramassable")) this._appliquerRamassable(img, def);
+      if (estVegetation) this._appliquerVegetation(img, objet);
+
+      // Enregistrement dans Interactions si un tag interactif est présent
+      if (this.interactions) {
+        const tagsInteractifs = ["ramassable", "jeter", "entrer", "parler"];
+        if (tags.some(t => tagsInteractifs.includes(t))) {
+          this.interactions.enregistrer({
+            sprite:   img,
+            tags,
+            nom:      def.nom ?? cle,
+            icone:    def.icone ?? null,
+            quantiteRamassee: def.quantiteRamassee ?? 1,
+            callbacks: {},
+          });
+        }
+      }
 
       this.objetsDepth.push(img);
     });
@@ -161,28 +175,9 @@ export default class Carte {
     this.objetsRamassables.push(img);
   }
 
-  obtenirObjetProche(spriteJoueur) {
-    const piedX = spriteJoueur.x;
-    const piedY = spriteJoueur.y + spriteJoueur.displayHeight / 2;
-    const dist  = CONFIG_JEU.DISTANCE_RAMASSAGE;
-
-    let plusProche = null;
-    let distMin    = Infinity;
-
-    this.objetsRamassables.forEach((sprite) => {
-      const dx = piedX - sprite.x;
-      const dy = piedY - sprite.y;
-      const d  = Math.sqrt(dx * dx + dy * dy);
-      if (d < dist && d < distMin) {
-        distMin    = d;
-        plusProche = sprite;
-      }
-    });
-
-    return plusProche;
-  }
-
   retirerObjet(sprite) {
+    if (this.interactions) this.interactions.supprimer(sprite);
+
     const index = this.objetsRamassables.indexOf(sprite);
     if (index !== -1) this.objetsRamassables.splice(index, 1);
 

@@ -29,5 +29,5 @@ export const DEFINITIONS = {
   
   // ─── Utilisables ──────────────────────────────────────────────────────────────
   "maison":   { tags: ["batiment"] },
-  "poubelle": { tags: ["batiment"] },
+  "poubelle": { tags: ["batiment", "jeter"] },
 };

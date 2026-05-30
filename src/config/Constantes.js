@@ -37,7 +37,7 @@ export const CONFIG_JEU = {
   TOUCHE_INVENTAIRE: "I",
 
   // Interactions
-  DISTANCE_RAMASSAGE: 60,   // px
+  DISTANCE_INTERACTION: 60,   // px
 
   // Son
   VOLUME_THEME: 0.2,
