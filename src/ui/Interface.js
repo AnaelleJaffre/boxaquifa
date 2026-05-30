@@ -87,23 +87,25 @@ export default class Interface {
   afficherIndicateurRamassage(objet, camera) {
 
     if (!objet) {
-      this.indicateurRamassage.style.display = "none"
+      this.indicateurRamassage.style.display = "none";
       return
     }
 
-    const pos = camera.worldView
+    const estTactile = !window.matchMedia("(hover: hover)").matches;
+    const texte = estTactile ? "Prendre" : "Prendre (F)";
+    
+    const pos = camera.worldView;
+    const x = Math.round(objet.x - pos.x);
+    const y = Math.round(objet.y - pos.y);
 
-    const x = Math.round(objet.x - pos.x)
-    const y = Math.round(objet.y - pos.y)
+    this.indicateurRamassage.style.display = "block";
+    this.indicateurRamassage.textContent = texte;
 
-    this.indicateurRamassage.style.display = "block"
-    this.indicateurRamassage.textContent = "Prendre (F)"
+    this.indicateurRamassage.style.left = `${x}px`;
+    this.indicateurRamassage.style.top = `${y}px`;
 
-    this.indicateurRamassage.style.left = `${x}px`
-    this.indicateurRamassage.style.top = `${y}px`
-
-    const offsetY = 30
-    this.indicateurRamassage.style.top = `${y - offsetY}px`
+    const offsetY = 30;
+    this.indicateurRamassage.style.top = `${y - offsetY}px`;
 
   }
 
