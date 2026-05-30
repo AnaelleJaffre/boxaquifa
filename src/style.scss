@@ -164,8 +164,7 @@ canvas {
   }
 }
 
-// Indicateur de ramassage
-#indicateur-ramassage {
+.indicateur-interaction {
   position: fixed;
   transform: translate(-50%, -100%);
   display: none;
@@ -176,7 +175,6 @@ canvas {
   cursor: pointer;
   transition: background 0.2s, border 0.2s;
 
-  // Actif — bouton visible (ramasser, parler, entrer)
   &[data-passif="false"] {
     background: var(--couleur-hud);
     backdrop-filter: blur(4px);
@@ -184,7 +182,6 @@ canvas {
     border-radius: var(--rayon-normal);
   }
 
-  // Passif — texte simple (jeter)
   &[data-passif="true"] {
     background: none;
     border: none;

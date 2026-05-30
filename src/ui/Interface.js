@@ -16,11 +16,13 @@ export default class Interface {
     this.boutonInventaire.textContent = "I";
     document.body.appendChild(this.boutonInventaire);
 
-    // Indicateur de ramassage
-    this.indicateurInteraction  = document.createElement("div");
-    this.indicateurInteraction .id = "indicateur-ramassage";
-    this.indicateurInteraction .style.display = "none";
-    document.body.appendChild(this.indicateurInteraction );
+    // Indicateur d'interaction
+    this.indicateurInteraction = document.createElement("div");
+    this.indicateurInteraction.classList.add("indicateur-interaction");
+    this.indicateurInteraction.style.display = "none";
+    document.body.appendChild(this.indicateurInteraction);
+
+    this._indicateursPassifs = [];
   }
 
   _construireInventaire() {
@@ -84,44 +86,85 @@ export default class Interface {
     });
   }
 
-  afficherIndicateurInteraction(objet, config, spriteJoueur) {
+  mettreAJourIndicateurs(objetActif, configActif, passifs, spriteJoueur) {
+    
+    // ─── Actif ────────────────────────────────────────────────────────────────
+    this._afficherIndicateurActif(objetActif, configActif);
+
+    // ─── Passifs ──────────────────────────────────────────────────────────────
+    this._mettreAJourIndicateursPassifs(passifs);
+  }
+
+  _afficherIndicateurActif(objet, config) {
     if (!objet || !config) {
-      this.indicateurInteraction .style.display = "none";
-      this.indicateurInteraction .dataset.tutoOuvert = "false";
+      this.indicateurInteraction.style.display = "none";
+      this.indicateurInteraction.dataset.tutoOuvert = "false";
       return;
     }
-    
+
     const estTactile = !window.matchMedia("(hover: hover)").matches;
     const raccourci  = (!estTactile && !config.passif) ? " (F)" : "";
     const texte      = `${config.verbe}${raccourci}`;
 
+    this._positionnerIndicateur(this.indicateurInteraction, objet);
+    this.indicateurInteraction.style.display = "block";
+    this.indicateurInteraction.dataset.passif = "false";
+    this.indicateurInteraction.textContent = texte;
+    this.indicateurInteraction.onclick = null;
+  }
+
+  _mettreAJourIndicateursPassifs(passifs) {
+    // Recycle ou crée les indicateurs passifs nécessaires
+    passifs.forEach(({ objet, config }, i) => {
+      if (!this._indicateursPassifs[i]) {
+        const el = document.createElement("div");
+        el.classList.add("indicateur-interaction");
+        el.dataset.passif = "true";
+        el.style.display = "none";
+        document.body.appendChild(el);
+        this._indicateursPassifs.push(el);
+      }
+
+      const el = this._indicateursPassifs[i];
+      const texte = config.verbe;
+
+      this._positionnerIndicateur(el, objet);
+      el.style.display = "block";
+      el.dataset.passif = "true";
+
+      const tutoOuvert = el.dataset.tutoOuvert === "true";
+      if (config.tuto) {
+        el.textContent = tutoOuvert ? config.tuto : texte;
+        el.onclick = () => {
+          const ouvert = el.dataset.tutoOuvert === "true";
+          el.dataset.tutoOuvert = ouvert ? "false" : "true";
+          el.dataset.passif = ouvert ? "true" : "false";
+          this._mettreAJourIndicateursPassifs(passifs);
+        };
+      } else {
+        el.textContent = texte;
+        el.onclick = null;
+      }
+    });
+
+    // Cache les indicateurs en surplus
+    for (let i = passifs.length; i < this._indicateursPassifs.length; i++) {
+      this._indicateursPassifs[i].style.display = "none";
+      this._indicateursPassifs[i].dataset.tutoOuvert = "false";
+    }
+  }
+
+  _positionnerIndicateur(el, objet) {
     const cam = this._derniereCamera;
-    if (cam) {
-      const pos = cam.worldView;
-      const x   = Math.round(objet.sprite.x - pos.x);
-      // Utilise getBounds() pour avoir le vrai haut du sprite
-      const bounds = objet.sprite.getBounds();
-      const y   = Math.round(bounds.top - pos.y);
-      this.indicateurInteraction .style.left = `${x}px`;
-      this.indicateurInteraction .style.top  = `${y}px`;
-    }
-
-    this.indicateurInteraction .style.display = "block";
-    this.indicateurInteraction .dataset.passif = config.passif ? "true" : "false";
-
-    const tutoOuvert = this.indicateurInteraction .dataset.tutoOuvert === "true";
-    if (config.passif && config.tuto) {
-      this.indicateurInteraction .textContent = tutoOuvert ? config.tuto : texte;
-      this.indicateurInteraction .onclick = () => {
-        const ouvert = this.indicateurInteraction .dataset.tutoOuvert === "true";
-        this.indicateurInteraction .dataset.tutoOuvert = ouvert ? "false" : "true";
-        this.indicateurInteraction .dataset.passif = ouvert ? "true" : "false";
-        this.afficherIndicateurInteraction(objet, config, null);
-      };
-    } else {
-      this.indicateurInteraction .textContent = texte;
-      this.indicateurInteraction .onclick = null;
-    }
+    if (!cam) return;
+    const pos    = cam.worldView;
+    const x      = Math.round(objet.sprite.x - pos.x);
+    const bounds = objet.sprite.getBounds?.();
+    const y      = bounds
+      ? Math.round(bounds.top - pos.y)
+      : Math.round(objet.sprite.y - pos.y);
+    el.style.left = `${x}px`;
+    el.style.top  = `${y}px`;
   }
 
   enregistrerCamera(camera) {

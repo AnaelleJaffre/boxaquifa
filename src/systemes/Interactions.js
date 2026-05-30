@@ -51,37 +51,41 @@ export default class Interactions {
   mettreAJour(spriteJoueur) {
     const piedX = spriteJoueur.x;
     const piedY = spriteJoueur.y + spriteJoueur.displayHeight / 2;
-    const dist  = CONFIG_JEU.DISTANCE_INTERACTION;
 
     let plusProche  = null;
     let distMin     = Infinity;
-    let tagRetenu   = null;
+    let tagActif    = null;
+    const passifs   = [];
 
     this.objetsInteractifs.forEach((objet) => {
+      const tag = objet.tags.find((t) => INTERACTIONS[t]);
+      if (!tag) return;
+
+      const config = INTERACTIONS[tag];
+      const distMax = config.passif
+        ? CONFIG_JEU.DISTANCE_INTERACTION_PASSIVE
+        : CONFIG_JEU.DISTANCE_INTERACTION;
+
       const dx = piedX - objet.sprite.x;
       const dy = piedY - objet.sprite.y;
       const d  = Math.sqrt(dx * dx + dy * dy);
 
-      const tag = objet.tags.find((t) => INTERACTIONS[t]);
-      if (!tag) return;
+      if (d > distMax) return;
 
-      const estPassif = INTERACTIONS[tag].passif;
-      const distMax   = estPassif
-        ? CONFIG_JEU.DISTANCE_INTERACTION_PASSIVE
-        : CONFIG_JEU.DISTANCE_INTERACTION;
-
-      if (d < distMax && d < distMin) {
+      if (config.passif) {
+        passifs.push({ objet, config });
+      } else if (d < distMin) {
         distMin    = d;
         plusProche = objet;
-        tagRetenu  = tag;
+        tagActif   = tag;
       }
     });
 
     this.objetActif = plusProche;
-    this.tagActif   = tagRetenu;
+    this.tagActif   = tagActif;
 
-    const config = tagRetenu ? INTERACTIONS[tagRetenu] : null;
-    this.interface.afficherIndicateurInteraction(plusProche, config, spriteJoueur);
+    const configActif = tagActif ? INTERACTIONS[tagActif] : null;
+    this.interface.mettreAJourIndicateurs(plusProche, configActif, passifs, spriteJoueur);
   }
 
   // ─── Declenchement ─────────────────────────────────────────────────────────
