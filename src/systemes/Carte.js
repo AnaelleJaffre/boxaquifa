@@ -166,15 +166,6 @@ export default class Carte {
     this.zonesVegetation.push(zone);
   }
 
-  _appliquerRamassable(img, def) {
-    img.ramassable       = true;
-    img.cleStack         = def.cleStack;
-    img.nom              = def.nom;
-    img.icone            = def.icone;
-    img.quantiteRamassee = def.quantiteRamassee;
-    this.objetsRamassables.push(img);
-  }
-
   retirerObjet(sprite) {
     if (this.interactions) this.interactions.supprimer(sprite);
 
