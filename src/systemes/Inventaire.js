@@ -36,6 +36,10 @@ export default class Inventaire {
     return true
   }
 
+  retirerSlot(index) {
+    this.slots[index] = null;
+  }
+
   obtenirSlots() {
     return this.slots;
   }

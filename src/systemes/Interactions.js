@@ -83,6 +83,7 @@ export default class Interactions {
 
     this.objetActif = plusProche;
     this.tagActif   = tagActif;
+    this.passifsActifs = passifs;
 
     const configActif = tagActif ? INTERACTIONS[tagActif] : null;
     this.interface.mettreAJourIndicateurs(plusProche, configActif, passifs, spriteJoueur);
@@ -109,5 +110,9 @@ export default class Interactions {
 
   obtenirTagActif() {
     return this.tagActif;
+  }
+
+  aTagPassifActif(tag) {
+    return this.passifsActifs?.some(p => p.objet.tags.includes(tag)) ?? false;
   }
 }

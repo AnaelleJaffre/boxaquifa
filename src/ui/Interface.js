@@ -9,6 +9,7 @@ export default class Interface {
 
   _construireHud() {
     this.hud = document.getElementById(CONFIG_JEU.ID_HUD);
+    document.addEventListener("dragover", (e) => e.preventDefault());
 
     // Bouton inventaire mobile
     this.boutonInventaire = document.createElement("button");
@@ -23,6 +24,12 @@ export default class Interface {
     document.body.appendChild(this.indicateurInteraction);
 
     this._indicateursPassifs = [];
+
+    // Drag pour jeter
+    this._labelDrag = document.createElement("div");
+    this._labelDrag.id = "label-drag";
+    this._labelDrag.style.display = "none";
+    document.body.appendChild(this._labelDrag);
   }
 
   _construireInventaire() {
@@ -34,8 +41,42 @@ export default class Interface {
       const slot = document.createElement("div");
       slot.classList.add("slot");
       slot.dataset.index = i;
+      slot.setAttribute("draggable", true);
+
+      slot.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("slot-index", i);
+        slot.classList.add("dragging");
+        this._labelDrag.style.display = "block";
+        document.body.dataset.dropValide = "false";
+      });
+      
+      slot.addEventListener("dragend", () => {
+        slot.classList.remove("dragging");
+        this._labelDrag.style.display = "none";
+        document.body.removeAttribute("data-drop-valide");
+      });
+
       grille.appendChild(slot);
     }
+
+    document.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      if (this._labelDrag) {
+        this._labelDrag.style.left = `${e.clientX + 12}px`;
+        this._labelDrag.style.top  = `${e.clientY + 12}px`;
+
+        // Vérifier si la souris est réellement au-dessus d'une zoneDrop active
+        const sousLaSouris = document.elementFromPoint(e.clientX, e.clientY);
+        const dropValide = this._indicateursPassifs.some(el =>
+          el._zoneDrop &&
+          el._zoneDrop.style.pointerEvents !== "none" &&
+          el._zoneDrop === sousLaSouris
+        );
+
+        document.body.dataset.dropValide = dropValide ? "true" : "false";
+        this._labelDrag.textContent = dropValide ? "Jeter" : "Trop loin";
+      }
+    });
 
     this.conteneurInventaire = conteneur;
   }
@@ -51,6 +92,10 @@ export default class Interface {
       e.stopPropagation();
       callback();
     });
+  }
+
+  surJeter(callback) {
+    this._callbackJeter = callback;
   }
 
   afficherInventaire(estOuvert) {
@@ -133,6 +178,7 @@ export default class Interface {
       el.dataset.passif = "true";
 
       const tutoOuvert = el.dataset.tutoOuvert === "true";
+
       if (config.tuto) {
         el.textContent = tutoOuvert ? config.tuto : texte;
         el.onclick = () => {
@@ -145,12 +191,48 @@ export default class Interface {
         el.textContent = texte;
         el.onclick = null;
       }
+
+      // Drop pour jeter
+      if (objet.tags.includes("jeter") && !el._dropBranche) {
+        const zoneDrop = document.createElement("div");
+        zoneDrop.style.position = "fixed";
+        zoneDrop.style.pointerEvents = "auto";
+        document.body.appendChild(zoneDrop);
+        el._zoneDrop = zoneDrop;
+
+        zoneDrop.addEventListener("dragover", (e) => e.preventDefault());
+        zoneDrop.addEventListener("drop", (e) => {
+          const index = parseInt(e.dataTransfer.getData("slot-index"));
+          if (!isNaN(index) && this._callbackJeter) {
+            this._callbackJeter(index);
+          }
+          document.body.dataset.dropValide = "false";
+          this._labelDrag.style.display = "none";
+        });
+        el._dropBranche = true;
+      }
+
+      // Mise à jour position/taille à chaque frame
+      if (el._zoneDrop) {
+        el._zoneDrop.style.pointerEvents = "auto";
+        const cam = this._derniereCamera;
+        const pos = cam.worldView;
+        const bounds = objet.sprite.getBounds?.();
+        el._zoneDrop.style.left   = `${Math.round(bounds.left  - pos.x)}px`;
+        el._zoneDrop.style.top    = `${Math.round(bounds.top   - pos.y)}px`;
+        el._zoneDrop.style.width  = `${Math.round(bounds.width)}px`;
+        el._zoneDrop.style.height = `${Math.round(bounds.height)}px`;
+      }
     });
 
     // Cache les indicateurs en surplus
     for (let i = passifs.length; i < this._indicateursPassifs.length; i++) {
       this._indicateursPassifs[i].style.display = "none";
       this._indicateursPassifs[i].dataset.tutoOuvert = "false";
+      if (this._indicateursPassifs[i]._zoneDrop) {
+        this._indicateursPassifs[i]._zoneDrop.style.pointerEvents = "none";
+        document.body.dataset.dropValide = "false";
+      }
     }
   }
 

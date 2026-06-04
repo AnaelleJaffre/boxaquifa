@@ -141,6 +141,43 @@ canvas {
     font-family: var(--police-mono);
     opacity: 0.9;
   }
+
+  &[draggable="true"] {
+    cursor: grab;
+  }
+
+  &:active {
+    cursor: grabbing;
+    background: rgba(255, 255, 255, 0);
+  }
+
+  .slot.dragging {
+    opacity: 1;
+  }
+}
+
+#label-drag {
+  position: fixed;
+  pointer-events: none;
+  font-family: var(--police-mono);
+  font-size: var(--taille-texte-hud);
+  padding: 4px 10px;
+  border-radius: var(--rayon-normal);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+
+  &[data-drop-valide="false"],
+  body[data-drop-valide="false"] & {
+    background: rgba(207, 157, 157, 0.1);
+    border: 1px solid rgba(255, 219, 219, 0.562);
+    color: white;
+  }
+
+  body[data-drop-valide="true"] & {
+    background: rgba(185, 219, 185, 0.1);
+    border: 1px solid rgba(214, 255, 214, 0.4);
+    color: white;
+  }
 }
 
 #bouton-inventaire {
@@ -192,21 +229,6 @@ canvas {
   }
 }
 
-// ─── Slots ────────────────────────────────────────────────────────────────────
-// .slot {
-//   flex-shrink: 0; // Empêche la compression sur mobile
-//   width: 52px;
-//   height: 52px;
-//   background: var(--couleur-slot);
-//   border-radius: var(--rayon-slot);
-//   transition: background 0.15s, transform 0.15s;
-//   cursor: pointer;
-
-//   &:hover {
-//     background: var(--couleur-slot-survol);
-//     transform: scale(1.05);
-//   }
-// }
 
 // ─── Responsive ───────────────────────────────────────────────────────────────
 @media (max-width: 600px) {

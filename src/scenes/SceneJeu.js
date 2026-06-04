@@ -58,6 +58,12 @@ export default class SceneJeu extends Phaser.Scene {
 
     this.tactile.creerListenerRamassage(this.interface.indicateurInteraction );
 
+    this.interface.surJeter((index) => {
+      if (!this.interactions.aTagPassifActif("jeter")) return;
+      this.inventaire.retirerSlot(index);
+      this.interface.mettreAJourSlots(this.inventaire.obtenirSlots());
+    });
+
     const depart = this.carte.obtenirPointDepart();
     this.joueur = new Joueur(this, depart.x, depart.y);
 
